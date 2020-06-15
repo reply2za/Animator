@@ -38,4 +38,9 @@ public class ChangeDimension implements IActionCommand {
     }
     ticks = this.ticks - 1;
   }
+
+  @Override
+  public String officialName() {
+    return "dimension";
+  }
 }

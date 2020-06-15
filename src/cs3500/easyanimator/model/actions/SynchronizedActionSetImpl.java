@@ -3,7 +3,8 @@ package cs3500.easyanimator.model.actions;
 import java.util.List;
 
 /**
- * To represent multiple animation commands occurring at the same time.
+ * To represent multiple actions occurring at the same time. An action is an {@link
+ * IActionCommand}.
  */
 public class SynchronizedActionSetImpl extends ASynchronisedActionSet implements
     ISynchronisedActionSet {

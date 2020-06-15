@@ -3,7 +3,8 @@ package cs3500.easyanimator.view;
 import cs3500.easyanimator.controller.IControllerFeatures;
 
 /**
- * The interface for our view class
+ * The interface for our view class. Creates the visual representation of the animator to the
+ * client. Can support 'read only' models for better data retrieval.
  */
 public interface IView {
 
@@ -15,6 +16,12 @@ public interface IView {
    * @param features the possible actions that the controller supports, of type {@link
    *                 IControllerFeatures}
    */
-  void addFeatures(IControllerFeatures features);
+  void addControllerFeatures(IControllerFeatures features);
+
+  /**
+   * Creates the view's visuals that is intended to be made as per the implementation and type of
+   * view.
+   */
+  void showView();
 }
 

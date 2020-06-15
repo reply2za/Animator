@@ -4,12 +4,10 @@ package cs3500.easyanimator.model;
 import cs3500.easyanimator.model.actions.IActionCommand;
 import cs3500.easyanimator.model.actions.ISynchronisedActionSet;
 import cs3500.easyanimator.model.shapes.IShape;
-
-/*
-TODO: additions to this interface
-- Add a 'removeAction' method
-- Add a method that manipulates visibility
- */
+import cs3500.easyanimator.util.AnimationBuilder;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 /**
  * Represents an instance of a single animation that is a collection of actions performed on shapes
@@ -50,24 +48,6 @@ public interface IAnimationModel {
   void remove(String key, int startTick,
       int endTick, IActionCommand ac);
 
-  /**
-   * Given a shape of type {@link IShape} and an animation of type {@link ISynchronisedActionSet}
-   * and a String representing the shape's unique name. Prints out the state of the shape before and
-   * after the animation is applied. This is returned as a string in a log formation in regards to
-   * the shape. Assuming that it is a part of the 'shapeIdentifier' HashMap, this method will also
-   * put the mutated shape in the map.
-   *
-   * @return A string that prints out the full animation state for the total time.
-   */
-  String getAnimationLog();
-
-  /**
-   * Prints out a more detailed description of the animations in the {@link IAnimationModel} for the
-   * visually impaired.
-   *
-   * @return A string that prints out the full animation description for the total duration.
-   */
-  String getAnimationDescription();
 
   /**
    * Creates a new {@link IShape} in the model to be manipulated.
@@ -78,15 +58,15 @@ public interface IAnimationModel {
    */
   void createShape(String name, IShape shape);
 
-
   // TODO: Add to README as a change to the model interface : new method
+
   /**
    * Creates a new {@link IShape} in the model that can be manipulated via actions. Does not require
    * any instantiation of an {@link IShape} to be passed as an argument.
    *
    * @param name   the unique name of the shape
    * @param type   the type of shape based on specific keywords: 'triangle' - creates a new {@link
-   *               cs3500.easyanimator.model.shapes.Triangle} 'oval' - creates a new {@link
+   *               cs3500.easyanimator.model.shapes.Triangle} 'ellipse' - creates a new {@link
    *               cs3500.easyanimator.model.shapes.Oval} 'rectangle' - creates a new {@link
    *               cs3500.easyanimator.model.shapes.Rectangle}
    * @param x      the shape's x position
@@ -112,11 +92,10 @@ public interface IAnimationModel {
   /**
    * Returns a list of the shapes names.
    *
-   * @return A String list of the {@link IShape} in the {@link IAnimationModel}.
+   * @return A list of the {@link IShape} in the {@link IAnimationModel}.
    */
-  String getShapeKeys();
+  ArrayList<String> getShapeKeys();
 
-  // TODO: Add to README as a change to the model interface : new method
   /**
    * Returns the shape and all of its features as an {@link IShape}.
    *
@@ -125,4 +104,89 @@ public interface IAnimationModel {
    */
   IShape getShape(String key);
 
+  /**
+   * Changes the canvas dimensions to the given arguments.
+   *
+   * @param x      the leftmost x value
+   * @param y      the topmost y value
+   * @param width  the width of the canvas
+   * @param height the height of the canvas
+   */
+  void changeCanvas(int x, int y, int width, int height);
+
+  /**
+   * Adds a transformation to the model.
+   *
+   * @param name The name of the shape (added with {@link AnimationBuilder#declareShape})
+   * @param t1   The start time of this transformation
+   * @param x1   The initial x-position of the shape
+   * @param y1   The initial y-position of the shape
+   * @param w1   The initial width of the shape
+   * @param h1   The initial height of the shape
+   * @param r1   The initial red color-value of the shape
+   * @param g1   The initial green color-value of the shape
+   * @param b1   The initial blue color-value of the shape
+   * @param t2   The end time of this transformation
+   * @param x2   The final x-position of the shape
+   * @param y2   The final y-position of the shape
+   * @param w2   The final width of the shape
+   * @param h2   The final height of the shape
+   * @param r2   The final red color-value of the shape
+   * @param g2   The final green color-value of the shape
+   * @param b2   The final blue color-value of the shape
+   */
+  void addMotions(String name, int t1, int x1, int y1, int w1,
+      int h1, int r1, int g1, int b1, int t2, int x2, int y2, int w2, int h2, int r2, int g2,
+      int b2);
+
+  /**
+   * Returns a list of ticks from a storage type that stores all of the actions of a shape as a list
+   * of {@link ISynchronisedActionSet}.
+   *
+   * @param name the unique name of the shape
+   * @return a list of integers of all of the ticks where the shape has a defined instance/frame
+   */
+  List<Integer> getTicks(String name);
+
+  /**
+   * Returns a hashmap of the animations that are in the model for all shapes.
+   *
+   * @return hashmap of the animations that are in the model for all shapes.
+   */
+  LinkedHashMap<String, ArrayList<ISynchronisedActionSet>> getAnimationList();
+
+  /**
+   * Returns a hashmap of all shapes an a given animation.
+   *
+   * @return hashmap of all of the shapes and their names.
+   */
+  LinkedHashMap<String, IShape> getShapeIdentifier();
+
+  /**
+   * Returns the canvas width for this model.
+   *
+   * @return returns the canvas width as an int.
+   */
+  int getCanvasWidth();
+
+  /**
+   * Returns the canvas height for this model.
+   *
+   * @return the canvas height as an int.
+   */
+  int getCanvasHeight();
+
+  /**
+   * Returns the canvas leftmost x value for this model.
+   *
+   * @return returns the leftmost x value of the canvas as an int.
+   */
+  int getCanvasX();
+
+  /**
+   * Returns the canvas topmost y value for this model.
+   *
+   * @return the topmost y value canvas height as an int.
+   */
+  int getCanvasY();
 }

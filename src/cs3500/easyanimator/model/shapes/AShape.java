@@ -79,4 +79,6 @@ abstract class AShape implements IShape {
   public boolean getVisibility() {
     return visibleStatus;
   }
+
+
 }

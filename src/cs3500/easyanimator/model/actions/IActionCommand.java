@@ -15,4 +15,12 @@ public interface IActionCommand {
    * @param s a given {@link IShape} to perform an {@link IActionCommand} on.
    */
   void mutate(IShape s);
+
+  /**
+   * Returns the offical name of an action (e.g. "move", "position"). This helps the respective
+   * textual views output.
+   *
+   * @return the field of the shape that an action is being performed on.
+   */
+  String officialName();
 }

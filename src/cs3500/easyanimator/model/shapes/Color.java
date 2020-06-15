@@ -33,7 +33,7 @@ public class Color {
    *
    * @return red
    */
-   int getR() {
+  public int getR() {
     return this.r;
   }
 
@@ -42,7 +42,7 @@ public class Color {
    *
    * @return green
    */
-  int getG() {
+  public int getG() {
     return this.g;
   }
 
@@ -51,9 +51,10 @@ public class Color {
    *
    * @return blue
    */
-  int getB() {
+  public int getB() {
     return this.b;
   }
+
 
   /**
    * Returns the string representation of a color.

@@ -40,4 +40,9 @@ public class ChangeColor implements IActionCommand {
     }
     ticks = this.ticks - 1;
   }
+
+  @Override
+  public String officialName() {
+    return "color";
+  }
 }

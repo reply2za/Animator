@@ -20,7 +20,7 @@ public class Dimension {
    * @throws IllegalArgumentException when the width and height are less than 1
    */
   public Dimension(int w, int h) {
-    if (w < 1 || h < 1) {
+    if (w < 0 || h < 0) {
       throw new IllegalArgumentException("Width and height must be positive.");
     }
     this.w = w;

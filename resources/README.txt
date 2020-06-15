@@ -64,4 +64,4 @@ View:
 - Added: ViewImplSVG class to represent an instance of a SVG visual view
 - Added: ViewImplTextual class to represent an instance of a textual visual view
 - Added: ViewImplVisual class to represent an instance of a visual visual view
-
+ 

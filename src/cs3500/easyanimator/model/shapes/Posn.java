@@ -23,7 +23,7 @@ public class Posn {
    *
    * @return the x position of the Posn
    */
-  int getX() {
+  public int getX() {
     return this.x;
   }
 
@@ -32,7 +32,7 @@ public class Posn {
    *
    * @return the y positon of the Posn
    */
-  int getY() {
+  public int getY() {
     return this.y;
   }
 
@@ -43,7 +43,7 @@ public class Posn {
    */
   @Override
   public String toString() {
-    return String.valueOf(x) + " " + String.valueOf(y);
+    return x + " " + y;
   }
 
   /**

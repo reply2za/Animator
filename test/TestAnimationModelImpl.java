@@ -1,32 +1,28 @@
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
-import cs3500.easyanimator.model.actions.IActionCommand;
-import cs3500.easyanimator.model.actions.ISynchronisedActionSet;
-import cs3500.easyanimator.model.actions.SynchronizedActionSetImpl;
 import cs3500.easyanimator.model.AnimationModelImpl;
 import cs3500.easyanimator.model.actions.ChangeColor;
 import cs3500.easyanimator.model.actions.ChangeDimension;
 import cs3500.easyanimator.model.actions.ChangePosition;
+import cs3500.easyanimator.model.actions.IActionCommand;
+import cs3500.easyanimator.model.actions.ISynchronisedActionSet;
+import cs3500.easyanimator.model.actions.SynchronizedActionSetImpl;
 import cs3500.easyanimator.model.shapes.Color;
 import cs3500.easyanimator.model.shapes.Dimension;
-import cs3500.easyanimator.model.IAnimationModel;
 import cs3500.easyanimator.model.shapes.IShape;
-import cs3500.easyanimator.model.shapes.Posn;
 import cs3500.easyanimator.model.shapes.Oval;
+import cs3500.easyanimator.model.shapes.Posn;
 import cs3500.easyanimator.model.shapes.Rectangle;
 import cs3500.easyanimator.model.shapes.Triangle;
 import java.util.ArrayList;
-import java.util.HashMap;
 import org.junit.Test;
-
 
 /**
  * Represents tests for the AnimationModel and all associated classes.
  */
+
 public class TestAnimationModelImpl {
 
   //Colors
@@ -56,59 +52,6 @@ public class TestAnimationModelImpl {
   IActionCommand color = new ChangeColor(3, 3, 3, 5);
 
   AnimationModelImpl model = new AnimationModelImpl();
-
-  //if the input is null
-  @Test(expected = IllegalArgumentException.class)
-  public void badAnimationModelConstructor() {
-    IAnimationModel model1 = new AnimationModelImpl(null);
-  }
-
-  @Test
-  public void testAdd() {
-    model.createShape("oval", oval);
-    model.createShape("rect", rect);
-    model.createShape("tri", tri);
-
-    model.add("rect", 0, 5, new ChangePosition(1, 10, 5));
-    model.add("rect", 0, 5, new ChangeDimension(10, 1, 5));
-    model.add("rect", 5, 10, new ChangeDimension(5, 2, 5));
-    model.add("rect", 3, 8, new ChangeColor(3, 3, 3, 5));
-
-    model.add("tri", 0, 5, new ChangePosition(10, 10, 5));
-    model.add("tri", 0, 5, new ChangeDimension(10, 10, 5));
-    model.add("tri", 5, 10, new ChangeDimension(1, 1, 5));
-
-    assertEquals("Columns:\n"
-        + "t x y w h r g b      t x y w h r g b\n"
-        + "shape rect rectangle\n"
-        + "0 10 10 1 1 20 0 0      3 5 10 6 1 20 0 0\n"
-        + "3 5 10 6 1 20 0 0      5 1 10 10 1 14 0 0\n"
-        + "5 1 10 10 1 14 0 0      8 1 10 7 1 3 3 3\n"
-        + "8 1 10 7 1 3 3 3      10 1 10 5 2 3 3 3\n"
-        + "shape oval oval\n"
-        + "shape tri triangle\n"
-        + "0 10 0 4 4 2 2 2      5 10 10 10 10 2 2 2\n"
-        + "5 10 10 10 10 2 2 2      10 10 10 1 1 2 2 2", model.getAnimationLog());
-  }
-
-  @Test
-  public void testAddSimpl() {
-    model.createShape("oval", oval);
-    model.createShape("rect", rect);
-    model.createShape("tri", tri);
-
-    model.add("rect", 0, 5, new ChangePosition(10, 10, 5));
-    model.add("rect", 0, 5, new ChangeDimension(10, 10, 5));
-    model.add("rect", 5, 10, new ChangeDimension(100, 100, 5));
-
-    assertEquals("Columns:\n"
-        + "t x y w h r g b      t x y w h r g b\n"
-        + "shape rect rectangle\n"
-        + "0 10 10 1 1 20 0 0      5 10 10 10 10 20 0 0\n"
-        + "5 10 10 10 10 20 0 0      10 10 10 100 100 20 0 0\n"
-        + "shape oval oval\n"
-        + "shape tri triangle", model.getAnimationLog());
-  }
 
   @Test(expected = IllegalArgumentException.class)
   public void testAddBad() {
@@ -143,65 +86,50 @@ public class TestAnimationModelImpl {
     model.createShape("rect", rect);
     model.createShape("tri", tri);
 
-    assertEquals("name , type\n"
-        + "-------------\n"
-        + "rect , rectangle\n"
-        + "oval , oval\n"
-        + "tri , triangle\n", model.getShapeKeys());
+    ArrayList<String> keys = new ArrayList<>();
+    keys.add("oval");
+    keys.add("rect");
+    keys.add("tri");
+    assertEquals(keys, model.getShapeKeys());
 
     model.clear();
 
-    assertEquals("name , type\n"
-        + "-------------\n", model.getShapeKeys());
+    assertEquals(new ArrayList<String>(), model.getShapeKeys());
   }
 
-  @Test
-  public void clear2() {
-    model.createShape("rect", rect);
-    model.add("rect", 0, 5, new ChangePosition(10, 10, 5));
+  /*
+     @Test
+    public void remove() {
+      model.createShape("rect", rect);
+      model.add("rect", 0, 5, new ChangePosition(10, 10, 5));
 
+      assertEquals("Columns:\n"
+          + "t x y w h r g b      t x y w h r g b\n"
+          + "shape rect rectangle\n"
+          + "0 10 10 1 1 20 0 0      5 10 10 1 1 20 0 0", model.getAnimationList());
 
-    assertEquals("Columns:\n"
-        + "t x y w h r g b      t x y w h r g b\n"
-        + "shape rect rectangle\n"
-        + "0 10 10 1 1 20 0 0      5 10 10 1 1 20 0 0", model.getAnimationLog());
+      model.removeShape("rect");
 
-    model.clear();
+      assertEquals("Columns:\n"
+          + "t x y w h r g b      t x y w h r g b", model.getAnimationLog());
+    }
 
-    assertEquals("Columns:\n"
-        + "t x y w h r g b      t x y w h r g b", model.getAnimationLog());
-  }
+    @Test(expected = IllegalArgumentException.class)
+    public void remove2() {
+      model.createShape("rect", rect);
+      model.add("rect", 0, 5, new ChangePosition(10, 10, 5));
 
+      assertEquals("Columns:\n"
+          + "t x y w h r g b      t x y w h r g b\n"
+          + "shape rect rectangle\n"
+          + "0 10 10 1 1 20 0 0      5 10 10 1 1 20 0 0", model.getAnimationLog());
 
-  @Test
-  public void remove() {
-    model.createShape("rect", rect);
-    model.add("rect", 0, 5, new ChangePosition(10, 10, 5));
+      model.removeShape("vvf"); //shape key doesnt exist in model
+    }
 
-    assertEquals("Columns:\n"
-        + "t x y w h r g b      t x y w h r g b\n"
-        + "shape rect rectangle\n"
-        + "0 10 10 1 1 20 0 0      5 10 10 1 1 20 0 0", model.getAnimationLog());
+   */
 
-    model.removeShape("rect");
-
-    assertEquals("Columns:\n"
-        + "t x y w h r g b      t x y w h r g b", model.getAnimationLog());
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void remove2() {
-    model.createShape("rect", rect);
-    model.add("rect", 0, 5, new ChangePosition(10, 10, 5));
-
-    assertEquals("Columns:\n"
-        + "t x y w h r g b      t x y w h r g b\n"
-        + "shape rect rectangle\n"
-        + "0 10 10 1 1 20 0 0      5 10 10 1 1 20 0 0", model.getAnimationLog());
-
-    model.removeShape("vvf"); //shape key doesnt exist in model
-  }
-
+  /*
   @Test
   public void getAnimationLog() {
     model.createShape("oval", oval);
@@ -229,7 +157,8 @@ public class TestAnimationModelImpl {
         + "0 10 0 4 4 2 2 2      5 10 10 10 10 2 2 2\n"
         + "5 10 10 10 10 2 2 2      10 10 10 1 1 2 2 2", model.getAnimationLog());
   }
-
+*/
+  /*
   @Test
   public void getAnimationLog2() {
     model.createShape("oval", oval);
@@ -320,7 +249,6 @@ public class TestAnimationModelImpl {
         + "oval , oval\n", model.getShapeKeys());
   }
 
-
   //In ASynchronisedActionSet
 
   @Test(expected = IllegalArgumentException.class)
@@ -332,7 +260,7 @@ public class TestAnimationModelImpl {
   public void getEndTickBad() {
     ISynchronisedActionSet ai = new SynchronizedActionSetImpl(0, -1, null);
   }
-
+*/
   @Test
   public void getStartTick() {
     listOfAnimationCommand.add(color);
@@ -417,19 +345,19 @@ public class TestAnimationModelImpl {
     listOfAnimationCommand.add(color);
     listOfAnimationCommand.add(size);
     ISynchronisedActionSet ai = new SynchronizedActionSetImpl(0, 5000, listOfAnimationCommand);
-    assertEquals(false, ai.containsInstanceOf(move));
+    assertFalse(ai.containsInstanceOf(move));
   }
 
   @Test
   public void containsInstanceOfEmpty() {
     ISynchronisedActionSet ai = new SynchronizedActionSetImpl(0, 5000, listOfAnimationCommand);
-    assertEquals(false, ai.containsInstanceOf(move));
+    assertFalse(ai.containsInstanceOf(move));
   }
 
   @Test
   public void containsInstanceOfNull() {
     ISynchronisedActionSet ai = new SynchronizedActionSetImpl(0, 5000, listOfAnimationCommand);
-    assertEquals(false, ai.containsInstanceOf(null));
+    assertFalse(ai.containsInstanceOf(null));
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -547,7 +475,7 @@ public class TestAnimationModelImpl {
     IShape shape = new Triangle(new Posn(3, 2),
         new Dimension(1, 2),
         new Color(3, 2, 1));
-    assertEquals(true, shape.getVisibility());
+    assertTrue(shape.getVisibility());
   }
 
   // In Change Color, Change Size and Change location
@@ -594,9 +522,8 @@ public class TestAnimationModelImpl {
     assertEquals("9 2 6 4 2 2 2", tri.toString());
   }
 
-
   //-----------------------------------------------------------------------
-
+/*
   @Test
   public void testAttemptChangingColor() {
     model.createShape("rect", rect);
@@ -618,7 +545,8 @@ public class TestAnimationModelImpl {
         + "5 10 0 4 4 2 2 2      10 10 0 4 4 9 10 10", model.getAnimationLog());
 
   }
-
+*/
+  /*
   @Test
   public void testAttemptOverlappingValidTicksSameShape() {
     model.createShape("rect", rect);
@@ -753,15 +681,14 @@ public class TestAnimationModelImpl {
     IAnimationModel m2 = new AnimationModelImpl(hs);
     assertEquals("Columns:\n"
         + "t x y w h r g b      t x y w h r g b\n"
-        + "shape tri triangle",m2.getAnimationLog());
+        + "shape tri triangle", m2.getAnimationLog());
   }
 
-  @Test (expected = IllegalArgumentException.class)
+  @Test(expected = IllegalArgumentException.class)
   public void testInvalidAnimationModelImplConstructor() {
     // map cannot be null
     ISynchronisedActionSet ia = new SynchronizedActionSetImpl(0, 5, null);
   }
-
 
 
   @Test
@@ -818,7 +745,6 @@ public class TestAnimationModelImpl {
   }
 
 
-
   @Test
   public void testInvalidAnimationCommandClassConstructor() {
     try {
@@ -842,7 +768,7 @@ public class TestAnimationModelImpl {
 
     // ChangeDimension
     try {
-      new ChangeDimension(0,  1, 0);
+      new ChangeDimension(0, 1, 0);
       fail("Ticks cannot be less than or equal to 0 for an action");
     } catch (IllegalArgumentException iae) {
       assertTrue(iae.getMessage().length() > 0);
@@ -856,13 +782,13 @@ public class TestAnimationModelImpl {
 
     // ChangePosition
     try {
-      new ChangePosition(256, 1,  -1);
+      new ChangePosition(256, 1, -1);
       fail("Ticks cannot be less than or equal to 0 for an action");
     } catch (IllegalArgumentException iae) {
       assertTrue(iae.getMessage().length() > 0);
     }
     try {
-      new ChangePosition(256, 1,  0);
+      new ChangePosition(256, 1, 0);
       fail("Ticks cannot be less than or equal to 0 for an action");
     } catch (IllegalArgumentException iae) {
       assertTrue(iae.getMessage().length() > 0);
@@ -872,7 +798,7 @@ public class TestAnimationModelImpl {
   @Test
   public void testAnimationImplAndIAnimationCommandClassConstructors() {
     // should not throw any errors during instantiation
-    IActionCommand changeColor5 = new ChangeColor(1, 2 , 3 , 5);
+    IActionCommand changeColor5 = new ChangeColor(1, 2, 3, 5);
     IActionCommand changeDimension5 = new ChangeDimension(1, 2, 5);
     IActionCommand changePosition = new ChangePosition(1, 2, 5);
     listOfAnimationCommand.add(changeColor5);
@@ -881,7 +807,7 @@ public class TestAnimationModelImpl {
     ISynchronisedActionSet ia = new SynchronizedActionSetImpl(0, 5, listOfAnimationCommand);
     // ensures that the listOfAnimationCommand was applied to the ISynchronisedActionSet and that
     // the 'getCommandList()' constructor can accurately retrieve it
-    assertEquals(listOfAnimationCommand,ia.getCommandList());
+    assertEquals(listOfAnimationCommand, ia.getCommandList());
   }
 
   @Test
@@ -893,4 +819,22 @@ public class TestAnimationModelImpl {
       assertTrue(iae.getMessage().length() > 0);
     }
   }
+
+  @Test
+  public void testBuilder() throws FileNotFoundException {
+    File file = new File("test/hanoi.txt");
+    AnimationBuilder<IAnimationModel> builder = new Builder();
+    AnimationReader animationReader = new AnimationReader();
+    IAnimationModel model1 = AnimationReader.parseFile(new FileReader(file), builder);
+    assertEquals("Columns:\n"
+        + "t x y w h r g b      t x y w h r g b\n"
+        + "shape S0 rectangle\n"
+        + "5 100 75 20 15 255 0 0      15 100 0 20 15 255 0 0\n"
+        + "19 100 0 20 15 255 0 0      24 100 0 20 15 255 0 0\n"
+        + "shape S1 triangle\n"
+        + "0 100 0 20 15 255 0 0      10 320 0 20 15 178 0 0\n"
+        + "15 320 0 20 15 178 0 0      20 320 210 20 15 178 0 0", model1.getAnimationLog());
+  }
+  */
+
 }

@@ -37,4 +37,9 @@ public class ChangePosition implements IActionCommand {
     }
     ticks = this.ticks - 1;
   }
+
+  @Override
+  public String officialName() {
+    return "position";
+  }
 }

@@ -1,25 +1,56 @@
 package cs3500.easyanimator.controller;
 
 import cs3500.easyanimator.model.IAnimationModel;
+import cs3500.easyanimator.model.actions.ISynchronisedActionSet;
+import cs3500.easyanimator.model.shapes.IShape;
 import cs3500.easyanimator.view.IView;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
+/**
+ * This represents an instance of our controller. It handles both the view and model to delegate to
+ * their respective operations. Constructor takes in both a model of type {@link IAnimationModel}
+ * and view of type {@link IView}.
+ */
 public class ControllerImpl implements IControllerFeatures {
 
-    private IAnimationModel model;
-    private IView view;
+  private final IAnimationModel model;
+  private final IView view;
 
-
+  /**
+   * A constructor for our controller. Takes in an animation model of {@link IAnimationModel} and a
+   * view of type {@link IView}.
+   *
+   * @param m The model that will be handled.
+   * @param v The view type to output.
+   */
   public ControllerImpl(IAnimationModel m, IView v) {
-      model = m;
-      view = v;
+    this.model = m;
+    this.view = v;
     //provide view with all the callbacks
-      view.addFeatures(this);
-    }
+    v.addControllerFeatures(this);
+  }
 
   @Override
-  public void createAnimation() {
+  public void exitProgram() {
+    System.exit(0);
+  }
 
+  @Override
+  public LinkedHashMap<String, IShape> getShapeIdentifier() {
+    return model.getShapeIdentifier();
+  }
+
+  @Override
+  public LinkedHashMap<String, ArrayList<ISynchronisedActionSet>> getAnimationList() {
+    return model.getAnimationList();
+  }
+
+  /**
+   * Runs the animator by calling to view to create the visuals.
+   */
+  @Override
+  public void runAnimator() {
+    view.showView();
   }
 }

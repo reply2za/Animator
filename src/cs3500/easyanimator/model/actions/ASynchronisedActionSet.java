@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents an abstract implementation of an animation. Implements {@link ISynchronisedActionSet}. The
- * simplest form of an animation is an empty list of commands and a given amount of time.
+ * Represents an abstract implementation of a synchronized action. A synchronized action is a list
+ * of actions on a given shape that all share the same tick. Implements {@link
+ * ISynchronisedActionSet}. The simplest form of an action is an empty list of commands and a given
+ * amount of time.
  */
 public abstract class ASynchronisedActionSet implements ISynchronisedActionSet {
 
@@ -15,8 +17,8 @@ public abstract class ASynchronisedActionSet implements ISynchronisedActionSet {
   protected ArrayList<IActionCommand> command;
 
   /**
-   * Constructor to create an instance of a singular shapes ISynchronisedActionSet. Can be abstracted to be
-   * applied to more than one shape in the future.
+   * Constructor to create an instance of a singular shapes ISynchronisedActionSet. Can be
+   * abstracted to be applied to more than one shape in the future.
    *
    * @param start   the start time of the animation
    * @param end     the end time of the shapes animation
@@ -38,7 +40,7 @@ public abstract class ASynchronisedActionSet implements ISynchronisedActionSet {
     }
     this.start = start;
     this.end = end;
-    this.command = new ArrayList<IActionCommand>(command);
+    this.command = new ArrayList<>(command);
   }
 
   @Override

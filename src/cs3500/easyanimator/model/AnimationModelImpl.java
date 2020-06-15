@@ -1,5 +1,8 @@
 package cs3500.easyanimator.model;
 
+import cs3500.easyanimator.model.actions.ChangeColor;
+import cs3500.easyanimator.model.actions.ChangeDimension;
+import cs3500.easyanimator.model.actions.ChangePosition;
 import cs3500.easyanimator.model.actions.IActionCommand;
 import cs3500.easyanimator.model.actions.ISynchronisedActionSet;
 import cs3500.easyanimator.model.actions.SynchronizedActionSetImpl;
@@ -10,10 +13,11 @@ import cs3500.easyanimator.model.shapes.Oval;
 import cs3500.easyanimator.model.shapes.Posn;
 import cs3500.easyanimator.model.shapes.Rectangle;
 import cs3500.easyanimator.model.shapes.Triangle;
+import cs3500.easyanimator.util.AnimationBuilder;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 
 /**
@@ -24,8 +28,14 @@ import java.util.Map;
  */
 public class AnimationModelImpl implements IAnimationModel {
 
-  private final Map<String, ArrayList<ISynchronisedActionSet>> animationList; // name and collective animations
-  private final Map<String, IShape> shapeIdentifier; // name of a shape and its reference
+  private final LinkedHashMap<String, ArrayList<ISynchronisedActionSet>> animationList; // name
+  // and collective animations
+  private final LinkedHashMap<String, IShape> shapeIdentifier; // name of a shape and its reference
+
+  private int canvasWidth = 500;
+  private int canvasHeight = 500;
+  private int canvasX = 0;
+  private int canvasY = 0;
 
   /**
    * An {@link AnimationModelImpl} constructor. In the case that an animation has begun but the user
@@ -35,29 +45,8 @@ public class AnimationModelImpl implements IAnimationModel {
    * both must have the same keys for a given shape and its operations
    */
   public AnimationModelImpl() {
-    shapeIdentifier = new HashMap<String, IShape>();
-    animationList = new HashMap<String, ArrayList<ISynchronisedActionSet>>();
-  }
-
-
-  /**
-   * An {@link AnimationModelImpl} constructor. In the case that an animation has begun and the user
-   * has a list to apply. More for abstraction in the future than for this assignment.
-   *
-   * @throws IllegalArgumentException if the inputed map is null
-   */
-  public AnimationModelImpl(
-      HashMap<String, IShape> map) {
-    if (map == null) {
-      throw new IllegalArgumentException("Map cannot be null.");
-    }
-    shapeIdentifier = map;
-    animationList = new HashMap<String, ArrayList<ISynchronisedActionSet>>();
-
-    for (String key : map.keySet()) {
-      animationList.put(key, new ArrayList<ISynchronisedActionSet>());
-
-    }
+    shapeIdentifier = new LinkedHashMap<>();
+    animationList = new LinkedHashMap<>();
   }
 
   @Override
@@ -84,8 +73,8 @@ public class AnimationModelImpl implements IAnimationModel {
         }
       } else {
         nonproblemlist.add(ia);
-        // if no time discrepancy then make the animation an ISynchronisedActionSet and add it to the
-        // right place in "animationList"
+        // if no time discrepancy then make the animation an
+        // ISynchronisedActionSet and add it to the right place in "animationList"
       }
     }
     //means that there are no conflicts
@@ -146,76 +135,6 @@ public class AnimationModelImpl implements IAnimationModel {
   }
 
   @Override
-  public String getAnimationLog() {
-    int logSpaceDivider = 6; // the amount of spaces between the start and end log
-    // make a stringbuilder that has all of the creation keys
-    StringBuilder log = new StringBuilder();
-    log.append("Columns:\n");
-    log.append("t x y w h r g b      t x y w h r g b");
-    for (String key : animationList.keySet()) {
-      // IShape shapeName = shapeIdentifier.get(key);
-      log.append("\n").append("shape ").append(key).append(" ")
-          .append(shapeIdentifier.get(key).officialShapeName());
-
-      for (ISynchronisedActionSet ia : animationList.get(key)) {
-        log.append("\n").append(ia.getStartTick()).append(" ")
-            .append(shapeIdentifier.get(key).toString());
-        log.append(" ".repeat(logSpaceDivider)); // adds the space divider
-        mutateShapeAndReplace(ia, key); // changes the shape in the map to the new shape
-        log.append(ia.getEndTick()).append(" ")
-            .append(shapeIdentifier.get(key).toString());
-      }
-    }
-    return log.toString();
-  }
-
-  @Override
-  public String getAnimationDescription() {
-    int i = 0;
-    StringBuilder log = new StringBuilder();
-    for (String key : shapeIdentifier.keySet()) {
-      log.append("Create ").append(shapeIdentifier.get(key).officialShapeName()).append(" named ")
-          .append(key).append("\n");
-    }
-    for (String key : shapeIdentifier.keySet()) {
-      if (i > 0) {
-        log.append("\n");
-      }
-      for (ISynchronisedActionSet ia : animationList.get(key)) {
-        IShape shape = shapeIdentifier.get(key);
-        String beforePosn = shape.getPosn().posnToString();
-        String beforeDim = shape.getDimension().dimToString();
-        String beforeColor = shape.getColor().colorToString();
-        mutateShapeAndReplace(ia, key);
-        String afterPosn = shape.getPosn().posnToString();
-        String afterDim = shape.getDimension().dimToString();
-        String afterColor = shape.getColor().colorToString();
-        log.append("\nFrom time ").append(ia.getStartTick()).append(" to time ")
-            .append(ia.getEndTick()).append(", ").append(key).append(" ");
-        if (beforePosn.equals(afterPosn)) {
-          log.append("stays put, ");
-        } else {
-          log.append("moves from ").append(beforePosn).append(" to ").append(afterPosn)
-              .append(", ");
-        }
-        if (beforeDim.equals(afterDim)) {
-          log.append("stays size ").append(beforeDim).append(", ");
-        } else {
-          log.append("changes from ").append(beforeDim).append(" to ").append(afterDim)
-              .append(", ");
-        }
-        if (beforeColor.equals(afterColor)) {
-          log.append("and stays ").append(beforeColor).append(".");
-        } else {
-          log.append("and turns ").append(afterColor).append(".");
-        }
-      }
-      i++;
-    }
-    return log.toString();
-  }
-
-  @Override
   public void createShape(String name, IShape shape) {
     if (shapeIdentifier.get(name) != null) {
       throw new IllegalArgumentException(
@@ -227,8 +146,6 @@ public class AnimationModelImpl implements IAnimationModel {
     }
   }
 
-
-  //TODO: Add tests for this method 'createShapeWithoutInstance'
   @Override
   public void createShapeWithoutInstance(String name, String type, int x, int y, int w, int h,
       int r, int g, int b) {
@@ -245,15 +162,13 @@ public class AnimationModelImpl implements IAnimationModel {
       case ("rectangle"):
         shape = new Rectangle(p, d, c);
         break;
-      case ("oval"):
+      case ("ellipse"):
         shape = new Oval(p, d, c);
         break;
       default:
         throw new IllegalArgumentException("Not a valid shape type.");
     }
-
-    shapeIdentifier.put(name, shape);
-    animationList.put(name, new ArrayList<>());
+    createShape(name, shape);
   }
 
   @Override
@@ -265,24 +180,11 @@ public class AnimationModelImpl implements IAnimationModel {
     shapeIdentifier.remove(key); // removes the key from the identifier
   }
 
-  //mutates the shape so that the final state can be printed for the logs
-  private void mutateShapeAndReplace(ISynchronisedActionSet ia, String key) {
-    for (int i = ia.getStartTick(); i < ia.getEndTick(); i++) {
-      ia.applyAnimation(shapeIdentifier.get(key));
-    } // mutates the shape to the desired ISynchronisedActionSet
-  }
-
   @Override
-  public String getShapeKeys() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("name , type\n").append("-".repeat(13)).append("\n");
-    for (String s : shapeIdentifier.keySet()) {
-      sb.append(s).append(" , ").append(shapeIdentifier.get(s).officialShapeName()).append("\n");
-    }
-    return sb.toString();
+  public ArrayList<String> getShapeKeys() {
+    return new ArrayList<>(shapeIdentifier.keySet());
   }
 
-  // TODO: Add tests for this method 'getShape'
   /**
    * Returns the shape and all of its features as an {@link IShape}.
    *
@@ -342,5 +244,269 @@ public class AnimationModelImpl implements IAnimationModel {
       newAnimationCommandList.clear();
     }
     return sortedAnimations;
+  }
+
+  /**
+   * Changes the canvas that is being established for the view.
+   *
+   * @param x      the leftmost x value
+   * @param y      the topmost y value
+   * @param width  the width of the canvas
+   * @param height the height of the canvas
+   */
+  public void changeCanvas(int x, int y, int width, int height) {
+    this.canvasX = x;
+    this.canvasY = y;
+    this.canvasWidth = width;
+    this.canvasHeight = height;
+  }
+
+  @Override
+  public void addMotions(String name, int t1, int x1, int y1, int w1,
+      int h1, int r1, int g1, int b1, int t2, int x2, int y2, int w2, int h2, int r2, int g2,
+      int b2) {
+    IShape newShape;
+    Color zeroColor = new Color(0, 0, 0);
+    Dimension zeroDim = new Dimension(0, 0);
+    Posn zeroPosn = new Posn(0, 0);
+    if (x1 != x2 || y1 != y2) {
+      this.add(name, t1, t2, new ChangePosition(x2, y2, t2 - t1));
+    }
+    if (w1 != w2 || h1 != h2) {
+      this.add(name, t1, t2, new ChangeDimension(x2, y2, t2 - t1));
+    }
+    if (r1 != r2 || g1 != g2 || b1 != b2) {
+      this.add(name, t1, t2, new ChangeColor(r2, g2, b2, t2 - t1));
+    }
+    if (shapeIdentifier.get(name).getColor().equals(zeroColor)
+        && shapeIdentifier.get(name).getPosn().equals(zeroPosn)
+        && shapeIdentifier.get(name).getDimension().equals(zeroDim)) {
+      IShape oldShape = shapeIdentifier.get(name);
+      String type = oldShape.officialShapeName();
+      if (type.equalsIgnoreCase("Rectangle")) {
+        newShape = new Rectangle(new Posn(x1, y1), new Dimension(w1, h1), new Color(r1, g1, b2));
+      } else if (type.equalsIgnoreCase("Oval")) {
+        newShape = new Oval(new Posn(x1, y1), new Dimension(w1, h1), new Color(r1, g1, b1));
+      } else if (type.equalsIgnoreCase("Triangle")) {
+        newShape = new Triangle(new Posn(x1, y1), new Dimension(w1, h1), new Color(r1, g1, b1));
+      } else {
+        throw new IllegalArgumentException("Unexpected shape name given.");
+      }
+      shapeIdentifier.put(name, newShape);
+    }
+  }
+
+  /**
+   * Returns a list of ticks from a storage type that stores all of the actions of a shape as a list
+   * of {@link ISynchronisedActionSet}.
+   *
+   * @param name the unique name of the shape
+   * @return a list of integers of all of the ticks where the shape has a defined instance/frame
+   */
+  @Override
+  public List<Integer> getTicks(String name) {
+    ArrayList<ISynchronisedActionSet> isas = animationList.get(name);
+    ArrayList<Integer> listOfTicks = new ArrayList<>();
+
+    for (ISynchronisedActionSet actionSet : isas) {
+      listOfTicks.add(actionSet.getEndTick());
+    }
+
+    return listOfTicks;
+  }
+
+  /**
+   * Returns a hashmap of the animations that are in the model for all shapes.
+   *
+   * @return hashmap of the animations that are in the model for all shapes.
+   */
+  @Override
+  public LinkedHashMap<String, ArrayList<ISynchronisedActionSet>> getAnimationList() {
+    return animationList;
+  }
+
+  /**
+   * Returns a hashmap of all shapes an a given animation.
+   *
+   * @return hashmap of all of the shapes and their names.
+   */
+  @Override
+  public LinkedHashMap<String, IShape> getShapeIdentifier() {
+    return shapeIdentifier;
+  }
+
+  @Override
+  public int getCanvasWidth() {
+    return canvasWidth;
+  }
+
+  @Override
+  public int getCanvasHeight() {
+    return canvasHeight;
+  }
+
+  /**
+   * Returns the canvas leftmost x value for this model.
+   *
+   * @return returns the leftmost x value of the canvas as an int.
+   */
+  @Override
+  public int getCanvasX() {
+    return this.canvasX;
+  }
+
+  /**
+   * Returns the canvas topmost y value for this model.
+   *
+   * @return the topmost y value canvas height as an int.
+   */
+  @Override
+  public int getCanvasY() {
+    return this.canvasY;
+  }
+
+  /**
+   * Represents the builder class for an IAnimationModelImpl. Helps to parse through a file and
+   * create a model based on the data.
+   */
+  public static final class Builder implements AnimationBuilder<IAnimationModel> {
+
+    IAnimationModel model;
+
+    /**
+     * A constrcutor for a builder that has a singular model to construct.
+     */
+    public Builder() {
+      this.model = new AnimationModelImpl();
+    }
+
+    /**
+     * Constructs a final document.
+     *
+     * @return the newly constructed document
+     */
+    @Override
+    public IAnimationModel build() {
+      return model;
+    }
+
+    /**
+     * Specify the bounding box to be used for the animation.
+     *
+     * @param x      The leftmost x value
+     * @param y      The topmost y value
+     * @param width  The width of the bounding box
+     * @param height The height of the bounding box
+     * @return This {@link AnimationBuilder}
+     */
+    @Override
+    public AnimationBuilder<IAnimationModel> setBounds(int x, int y, int width, int height) {
+      model.changeCanvas(x, y, width, height);
+      return this;
+    }
+
+    /**
+     * Adds a new shape to the growing document.
+     *
+     * @param name The unique name of the shape to be added. No shape with this name should already
+     *             exist.
+     * @param type The type of shape (e.g. "ellipse", "rectangle") to be added. The set of supported
+     *             shapes is unspecified, but should include "ellipse" and "rectangle" as a
+     *             minimum.
+     * @return This {@link AnimationBuilder}
+     */
+    @Override
+    public AnimationBuilder<IAnimationModel> declareShape(String name, String type) {
+
+      switch (type) {
+        case ("ellipse"):
+          model.createShapeWithoutInstance(name, "ellipse",
+              0, 0, 0, 0, 0, 0, 0);
+          break;
+        case ("rectangle"):
+          model.createShapeWithoutInstance(name, "rectangle",
+              0, 0, 0, 0, 0, 0, 0);
+          break;
+        case ("triangle"):
+          model.createShapeWithoutInstance(name, "triangle", 0, 0, 0,
+              0, 0, 0, 0);
+          break;
+        default:
+          throw new IllegalArgumentException("Not a valid shape type.");
+      }
+      return this;
+    }
+
+    /**
+     * Adds a transformation to the growing document.
+     *
+     * @param name The name of the shape (added with {@link AnimationBuilder#declareShape})
+     * @param t1   The start time of this transformation
+     * @param x1   The initial x-position of the shape
+     * @param y1   The initial y-position of the shape
+     * @param w1   The initial width of the shape
+     * @param h1   The initial height of the shape
+     * @param r1   The initial red color-value of the shape
+     * @param g1   The initial green color-value of the shape
+     * @param b1   The initial blue color-value of the shape
+     * @param t2   The end time of this transformation
+     * @param x2   The final x-position of the shape
+     * @param y2   The final y-position of the shape
+     * @param w2   The final width of the shape
+     * @param h2   The final height of the shape
+     * @param r2   The final red color-value of the shape
+     * @param g2   The final green color-value of the shape
+     * @param b2   The final blue color-value of the shape
+     * @return This {@link AnimationBuilder}
+     */
+    @Override
+    public AnimationBuilder<IAnimationModel> addMotion(String name, int t1, int x1, int y1, int w1,
+        int h1, int r1, int g1, int b1, int t2, int x2, int y2, int w2, int h2, int r2, int g2,
+        int b2) {
+
+      // tick 0 youre 0 0 0 0 sec 5 youre 5, 5 sec 5 you wanna go down
+      // addMotion is called
+      // tick 6 youre 1 1 11 1 1 , tick 10 you're 10 10 10
+      // 11 -> continues with whats in the model action list
+      // if shape's fields are all 0 then we need to change them to match
+      model.addMotions(name, t1, x1, y1, w1, h1, r1, g1, b1,
+          t2, x2, y2, w2, h2, r2, g2, b2);
+      return this;
+    }
+
+    /**
+     * Adds an individual keyframe to the growing document.
+     *
+     * @param name The name of the shape (added with {@link AnimationBuilder#declareShape})
+     * @param t    The time for this keyframe
+     * @param x    The x-position of the shape
+     * @param y    The y-position of the shape
+     * @param w    The width of the shape
+     * @param h    The height of the shape
+     * @param r    The red color-value of the shape
+     * @param g    The green color-value of the shape
+     * @param b    The blue color-value of the shape
+     * @return This {@link AnimationBuilder}
+     */
+    @Override
+    public AnimationBuilder<IAnimationModel> addKeyframe(String name, int t, int x, int y, int w,
+        int h, int r, int g, int b) {
+      IShape shape = model.getShape(name);
+      List<Integer> listOfTicks = model.getTicks(name);
+      if ((listOfTicks.get(listOfTicks.size() - 1) < t)) {
+        model.addMotions(name, listOfTicks.get(listOfTicks.size() - 1), x + 1, y + 1, w + 1,
+            h + 1, r + 1, g + 1, b + 1, t, x, y, w, h, r, g, b);
+      } else {
+        for (int i = 0; i < listOfTicks.size() - 1; i++) {
+          if (listOfTicks.get(i) == t) {
+            throw new IllegalArgumentException("Cant have the state conflict.");
+          } else if (listOfTicks.get(i) < t && listOfTicks.get(i + 1) > t) {
+            model.addMotions(name, listOfTicks.get(i), x + 1, y + 1, w + 1,
+                h + 1, r + 1, g + 1, b + 1, t, x, y, w, h, r, g, b);
+          }
+        }
+      }
+      return this;
+    }
   }
 }

@@ -22,4 +22,5 @@ public class Triangle extends AShape implements IShape {
   public String officialShapeName() {
     return "triangle";
   }
+
 }

@@ -21,4 +21,5 @@ public class Rectangle extends AShape implements IShape {
   public String officialShapeName() {
     return "rectangle";
   }
+
 }

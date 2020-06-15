@@ -4,20 +4,23 @@ import cs3500.easyanimator.model.shapes.IShape;
 import java.util.ArrayList;
 
 /**
- * To represent an animation for one {@link IShape} with a given time period and at most one of each
- * type of {@link IActionCommand}.
+ * Represents an interface of a synchronized action. A synchronized action is a list of actions on a
+ * given shape that all share the same tick. Implements {@link ISynchronisedActionSet}. The simplest
+ * form of an action is an empty list of commands and a given amount of time.
  */
 public interface ISynchronisedActionSet extends Comparable<ISynchronisedActionSet> {
 
   /**
-   * Gets the starting time of an {@link ISynchronisedActionSet}.
+   * Gets the starting time of an {@link ISynchronisedActionSet}. Assumes that a
+   * ISynchronisedActionSet has a starting time.
    *
    * @return the start time of an {@link ISynchronisedActionSet}.
    */
   int getStartTick();
 
   /**
-   * Gets the end time of an {@link ISynchronisedActionSet}.
+   * Gets the end time of an {@link ISynchronisedActionSet}. Assumes that a ISynchronisedActionSet
+   * has an ending time.
    *
    * @return the end time of an {@link ISynchronisedActionSet}.
    */
@@ -46,8 +49,8 @@ public interface ISynchronisedActionSet extends Comparable<ISynchronisedActionSe
   void removeCommand(int i);
 
   /**
-   * Returns a boolean that specifies whether an {@link ISynchronisedActionSet} contains an instance of a
-   * particular {@link IActionCommand}. This is used to avoid inconsistent shape states in an
+   * Returns a boolean that specifies whether an {@link ISynchronisedActionSet} contains an instance
+   * of a particular {@link IActionCommand}. This is used to avoid inconsistent shape states in an
    * {@link ISynchronisedActionSet}.
    *
    * @param ac the {@link IActionCommand} class that is being searched for.
