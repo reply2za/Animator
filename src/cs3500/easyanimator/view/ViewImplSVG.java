@@ -24,10 +24,12 @@ public class ViewImplSVG implements IView {
   IReadOnlyModel readOnlyModel;
 
   /**
-   * Takes in an appendable type to be outputted.
+   * A constructor that requires an appendable type to output the textual data, a speed for the
+   * tick, and a read-only model.
    *
-   * @param output         the output type for the text.
-   * @param secondsPerTick The speed in which the animation plays.
+   * @param output         the output type for the text
+   * @param secondsPerTick the tick speed in which the animation plays
+   * @param readOnlyModel the read-only model of type {@link IReadOnlyModel}
    */
   public ViewImplSVG(Appendable output, int secondsPerTick, IReadOnlyModel readOnlyModel) {
     this.output = output;
@@ -36,9 +38,11 @@ public class ViewImplSVG implements IView {
   }
 
   /**
-   * An alternate constructor with a set speed of 1 tick per second.
+   * An alternate constructor with a set speed of 1 tick per second. Requires an appendable to write
+   * the output to and a read-only model.
    *
-   * @param output the appendable type to be outputted.
+   * @param output        the appendable type to be outputted
+   * @param readOnlyModel the read-only model of type {@link IReadOnlyModel}
    */
   public ViewImplSVG(Appendable output, IReadOnlyModel readOnlyModel) {
     this.output = output;
@@ -47,25 +51,14 @@ public class ViewImplSVG implements IView {
   }
 
   /**
-   * Method to return the appendable so that it can be outputted to the proper channels.
+   * Method to generate the SCG text and append it to the given appendable.
    *
-   * @return the appendable that is being outputted by the view.
-   * @throws IOException If the appendable cannot be written to.
+   * @throws IOException if the appendable cannot be written to
    */
-  Appendable generateView() throws IOException {
-    Appendable a;
-    try {
-      a = output.append(getSVGText(this.readOnlyModel));
-    } catch (IOException io) {
-      throw new IOException("Could not write to the Appendable.");
-    }
-    return a;
+  private void generateView() throws IOException {
+    output.append(getSVGText(this.readOnlyModel));
   }
 
-  /**
-   * Creates the view's visuals that is intended to be made as per the implementation and type of
-   * view.
-   */
   @Override
   public void showView() {
     try {
@@ -138,7 +131,6 @@ public class ViewImplSVG implements IView {
           throw new IllegalArgumentException("Not a valid shape name");
       }
     }
-
     log.append("</svg>\n");
     return log.toString();
   }
@@ -289,13 +281,7 @@ public class ViewImplSVG implements IView {
     return logRectangle.toString();
   }
 
-  /**
-   * Passes the features of the controller of type {@link IControllerFeatures} to the view. Allows
-   * the view to retrieve these features from the controller to execute the proper reaction.
-   *
-   * @param features the possible actions that the controller supports, of type {@link
-   *                 IControllerFeatures}
-   */
+
   @Override
   public void addControllerFeatures(IControllerFeatures features) {
     // intentionally left blank

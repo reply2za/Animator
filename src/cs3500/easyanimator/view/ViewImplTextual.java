@@ -3,7 +3,6 @@ package cs3500.easyanimator.view;
 import cs3500.easyanimator.controller.IControllerFeatures;
 import cs3500.easyanimator.model.IAnimationModel;
 import cs3500.easyanimator.model.IReadOnlyModel;
-import cs3500.easyanimator.model.ReadOnlyModelImpl;
 import cs3500.easyanimator.model.actions.ISynchronisedActionSet;
 import cs3500.easyanimator.model.shapes.IShape;
 import java.io.IOException;
@@ -23,7 +22,8 @@ public class ViewImplTextual implements IView {
   /**
    * Takes in an output type for the view to output to.
    *
-   * @param output the output type for the view.
+   * @param output the output type for the view
+   * @param m the read-only model of tyep {@link IReadOnlyModel}
    */
   public ViewImplTextual(Appendable output, IReadOnlyModel m) {
     this.output = output;
@@ -34,23 +34,12 @@ public class ViewImplTextual implements IView {
   /**
    * Method to return the appendable so that it can be outputted to the proper channels.
    *
-   * @return the appendable that is being outputted by the view.
    * @throws IOException If the appendable cannot be written to.
    */
-  Appendable generateView() throws IOException {
-    Appendable a;
-    try {
-      a = output.append(getAnimationLog(animationList, shapeIdentifier));
-    } catch (IOException io) {
-      throw new IOException("Could not write to the Appendable.");
-    }
-    return a;
+  private void generateView() throws IOException {
+    output.append(getAnimationLog(animationList, shapeIdentifier));
   }
 
-  /**
-   * Creates the view's visuals that is intended to be made as per the implementation and type of
-   * view.
-   */
   @Override
   public void showView() {
     try {
@@ -59,7 +48,6 @@ public class ViewImplTextual implements IView {
       e.printStackTrace();
       // intentionally left unedited
     }
-
   }
 
   /**
@@ -74,7 +62,7 @@ public class ViewImplTextual implements IView {
   private String getAnimationLog(Map<String, ArrayList<ISynchronisedActionSet>> animationList,
       Map<String, IShape> shapeIdentifier) {
     int logSpaceDivider = 6; // the amount of spaces between the start and end log
-    // make a stringbuilder that has all of the creation keys
+    // make a StringBuilder that has all of the creation keys
     StringBuilder log = new StringBuilder();
     log.append("Columns:\n");
     log.append("t x y w h r g b      t x y w h r g b");
@@ -155,13 +143,6 @@ public class ViewImplTextual implements IView {
     return log.toString();
   }
 
-  /**
-   * Passes the features of the controller of type {@link IControllerFeatures} to the view. Allows
-   * the view to retrieve these features from the controller to execute the proper reaction.
-   *
-   * @param features the possible actions that the controller supports, of type {@link
-   *                 IControllerFeatures}
-   */
   @Override
   public void addControllerFeatures(IControllerFeatures features) {
     animationList = features.getAnimationList();
