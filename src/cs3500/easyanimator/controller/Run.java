@@ -124,7 +124,7 @@ public class Run {
     // print to console or file
     controller.runAnimator();
     if (outString.isEmpty()) {
-      System.out.println(view.toString());
+      System.out.println(sb.toString());
     } else {
       FileWriter fw = new FileWriter(outString);
       fw.write(sb.toString());
