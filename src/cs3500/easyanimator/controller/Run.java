@@ -15,6 +15,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Scanner;
 
 /**
  * The class that holds the main method for the Animation Project. This runs the project and must
@@ -38,6 +39,21 @@ public class Run {
    *                                  commands.
    */
   public static void main(String[] args) throws IOException {
+
+    // ------- START: NOT A PART OF THE ASSIGNMENT --------------
+    // this section allows command line arguments in the console
+
+    Scanner s = new Scanner(System.in).useDelimiter(System.lineSeparator());
+    StringBuilder all = new StringBuilder();
+    String temp = "";
+    all.append(s.next());
+    while (!temp.isBlank()) {
+      temp = s.next();
+      all.append(temp);
+    }
+    args = all.toString().split(" ");
+
+    // ------- END: NOT A PART OF THE ASSIGNMENT ----------------
 
     String fileString = "";
     String outString = "";
@@ -80,6 +96,7 @@ public class Run {
 
     // Gets the input file
     file = new File(fileString);
+    StringBuilder sb = new StringBuilder(outString);
     // Creates a model from the input file
     AnimationBuilder<IAnimationModel> builder = new Builder();
     IAnimationModel model = AnimationReader.parseFile(new FileReader(file), builder);
@@ -89,18 +106,10 @@ public class Run {
     // Creates the view
     switch (viewString) {
       case ("text"):
-        if (outString.isEmpty()) {
-          view = new ViewImplTextual(new StringBuilder(outString), readOnlyModel);
-        } else {
-          view = new ViewImplTextual(new FileWriter(outString), readOnlyModel);
-        }
+        view = new ViewImplTextual(sb, readOnlyModel);
         break;
       case ("svg"):
-        if (outString.isEmpty()) {
-          view = new ViewImplSVG(new StringBuilder(outString), readOnlyModel);
-        } else {
-          view = new ViewImplSVG(new FileWriter(outString), readOnlyModel);
-        }
+        view = new ViewImplSVG(sb, readOnlyModel);
         break;
       case ("visual"):
         view = new ViewImplVisual(Integer.parseInt(speedString), readOnlyModel);
@@ -112,11 +121,14 @@ public class Run {
 
     ControllerImpl controller = new ControllerImpl(model, view);
 
+    // print to console or file
+    controller.runAnimator();
     if (outString.isEmpty()) {
-      controller.runAnimator();
       System.out.println(view.toString());
     } else {
-      controller.runAnimator();
+      FileWriter fw = new FileWriter(outString);
+      fw.write(sb.toString());
+      fw.close();
     }
 
   }
