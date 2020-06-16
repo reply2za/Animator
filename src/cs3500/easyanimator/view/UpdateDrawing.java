@@ -26,7 +26,7 @@ public class UpdateDrawing extends JPanel implements ActionListener {
   int ticks;
 
   /**
-   * This is the constuctor for the class that handles updating the view as the time passes.
+   * This is the constructor for the class that handles updating the view as the time passes.
    *
    * @param animationList   The list of animations handled.
    * @param shapeIdentifier The shapes to be drawn.
@@ -41,7 +41,7 @@ public class UpdateDrawing extends JPanel implements ActionListener {
   }
 
   /**
-   * An overriden paint method so that we are able to draw all shapes that need to be drawn.
+   * An overridden paint method so that we are able to draw all shapes that need to be drawn.
    *
    * @param g The graphics that we are using to draw the shapes on.
    */
@@ -89,17 +89,22 @@ public class UpdateDrawing extends JPanel implements ActionListener {
   @Override
   public void actionPerformed(ActionEvent e) {
     for (String name : animationList.keySet()) {
-      ArrayList<ISynchronisedActionSet> currentAni = animationList.get(name);
+      ArrayList<ISynchronisedActionSet> listOfActions = animationList.get(name);
       IShape currentShape = shapeIdentifier.get(name);
-      for (ISynchronisedActionSet ai : currentAni) {
-        if (ai.getStartTick() <= ticks && ticks <= ai.getEndTick()) {
+      for (ISynchronisedActionSet ai : listOfActions) {
+        // removes the synchronized actions that have already occurred
+        if(ticks > ai.getEndTick()) {
+          listOfActions.remove(0);
+          break;
+        }
+        if (ticks >= ai.getStartTick()) {
           ai.applyAnimation(currentShape);
           break;
         }
       }
-      animationList.put(name, currentAni);
-      shapeIdentifier.put(name, currentShape);
-
+      // Animations seem to run fine without these two
+      //animationList.put(name, currentAni);
+      //shapeIdentifier.put(name, currentShape);
       repaint();
     }
   }
