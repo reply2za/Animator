@@ -16,8 +16,8 @@ public class ViewImplTextual implements IView {
 
   Appendable output;
   // stores the animations with the name
-  private Map<String, ArrayList<ISynchronisedActionSet>> animationList;
-  private Map<String, IShape> shapeIdentifier; // name of a shape and its reference
+  private final Map<String, ArrayList<ISynchronisedActionSet>> animationList;
+  private final Map<String, IShape> shapeIdentifier; // name of a shape and its reference
 
   /**
    * Takes in an output type for the view to output to.
@@ -29,7 +29,7 @@ public class ViewImplTextual implements IView {
     this.output = output;
     animationList = m.getAnimationList();
     shapeIdentifier = m.getShapeIdentifier();
-  }
+}
 
   /**
    * Method to return the appendable so that it can be outputted to the proper channels.
@@ -38,16 +38,6 @@ public class ViewImplTextual implements IView {
    */
   private void generateView() throws IOException {
     output.append(getAnimationLog(animationList, shapeIdentifier));
-  }
-
-  @Override
-  public void showView() {
-    try {
-      generateView();
-    } catch (IOException e) {
-      e.printStackTrace();
-      // intentionally left unedited
-    }
   }
 
   /**
@@ -145,6 +135,16 @@ public class ViewImplTextual implements IView {
       i++;
     }
     return log.toString();
+  }
+
+  @Override
+  public void showView() {
+    try {
+      generateView();
+    } catch (IOException e) {
+      e.printStackTrace();
+      // intentionally left unedited
+    }
   }
 
   @Override

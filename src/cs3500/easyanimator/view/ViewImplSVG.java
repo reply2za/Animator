@@ -29,7 +29,7 @@ public class ViewImplSVG implements IView {
    *
    * @param output         the output type for the text
    * @param secondsPerTick the tick speed in which the animation plays
-   * @param readOnlyModel the read-only model of type {@link IReadOnlyModel}
+   * @param readOnlyModel  the read-only model of type {@link IReadOnlyModel}
    */
   public ViewImplSVG(Appendable output, int secondsPerTick, IReadOnlyModel readOnlyModel) {
     this.output = output;
@@ -57,16 +57,6 @@ public class ViewImplSVG implements IView {
    */
   private void generateView() throws IOException {
     output.append(getSVGText(this.readOnlyModel));
-  }
-
-  @Override
-  public void showView() {
-    try {
-      generateView();
-    } catch (IOException e) {
-      e.printStackTrace();
-      // intentionally left unedited
-    }
   }
 
   /**
@@ -144,7 +134,7 @@ public class ViewImplSVG implements IView {
    * @return a String of action commands for the svg view.
    */
   private String svgEllipseCommands(IShape shape, ArrayList<ISynchronisedActionSet> actions) {
-    StringBuilder logEllipse = new StringBuilder();
+    StringBuilder log = new StringBuilder();
     for (ISynchronisedActionSet ia : actions) {
       Posn beforePosn = shape.getPosn();
       Dimension beforeDimension = shape.getDimension();
@@ -157,45 +147,45 @@ public class ViewImplSVG implements IView {
       for (IActionCommand ac : ia.getCommandList()) {
         switch (ac.officialName()) {
           case ("position"):
-            logEllipse.append("<animate attributeType=\"xml\" begin=\"base.begin+")
+            log.append("<animate attributeType=\"xml\" begin=\"base.begin+")
                 .append(ia.getStartTick() * secondsPerTick).append("ms\" ").append(" dur=\"")
                 .append((ia.getEndTick() * secondsPerTick) - (ia.getStartTick() * secondsPerTick))
                 .append("ms\" ");
-            logEllipse.append("attributeName=\"cx\" from=\"").append(beforePosn.getX())
+            log.append("attributeName=\"cx\" from=\"").append(beforePosn.getX())
                 .append("\" ").append("to=\"").append(afterPosn.getX())
                 .append("\" fill=\"freeze\" />\n");
-            logEllipse.append("<animate attributeType=\"xml\" begin=\"base.begin+")
+            log.append("<animate attributeType=\"xml\" begin=\"base.begin+")
                 .append(ia.getStartTick() * secondsPerTick).append("ms\" ").append(" dur=\"")
                 .append((ia.getEndTick() * secondsPerTick) - (ia.getStartTick() * secondsPerTick))
                 .append("ms\" ");
-            logEllipse.append("attributeName=\"cy\" from=\"").append(beforePosn.getY())
+            log.append("attributeName=\"cy\" from=\"").append(beforePosn.getY())
                 .append("\" ").append("to=\"").append(afterPosn.getY())
                 .append("\" fill=\"freeze\" />\n");
 
             break;
           case ("dimension"):
-            logEllipse.append("<animate attributeType=\"xml\" begin=\"base.begin+")
+            log.append("<animate attributeType=\"xml\" begin=\"base.begin+")
                 .append(ia.getStartTick() * secondsPerTick).append("ms\" ").append(" dur=\"")
                 .append((ia.getEndTick() * secondsPerTick) - (ia.getStartTick() * secondsPerTick))
                 .append("ms\" ");
-            logEllipse.append("attributeName=\"rx\" from=\"").append(beforeDimension.getW())
+            log.append("attributeName=\"rx\" from=\"").append(beforeDimension.getW())
                 .append("\" ").append("to=\"").append(afterDimension.getW())
                 .append("\" fill=\"freeze\" />\n");
-            logEllipse.append("<animate attributeType=\"xml\" begin=\"base.begin+")
+            log.append("<animate attributeType=\"xml\" begin=\"base.begin+")
                 .append(ia.getStartTick() * secondsPerTick).append("ms\"").append(" dur=\"")
                 .append((ia.getEndTick() * secondsPerTick) - (ia.getStartTick() * secondsPerTick))
                 .append("ms\" ");
-            logEllipse.append("attributeName=\"ry\" from=\"").append(beforeDimension.getH())
+            log.append("attributeName=\"ry\" from=\"").append(beforeDimension.getH())
                 .append("\" ").append("to=\"").append(afterDimension.getH())
                 .append("\" fill=\"freeze\" />\n");
 
             break;
           case ("color"):
-            logEllipse.append("<animate attributeType=\"xml\" begin=\"base.begin+")
+            log.append("<animate attributeType=\"xml\" begin=\"base.begin+")
                 .append(ia.getStartTick() * secondsPerTick).append("ms\"").append(" dur=\"")
                 .append((ia.getEndTick() * secondsPerTick) - (ia.getStartTick() * secondsPerTick))
                 .append("ms\" ");
-            logEllipse.append("attributeName=\"fill\" " + "to=\"rgb(").append(afterColor.getR())
+            log.append("attributeName=\"fill\" " + "to=\"rgb(").append(afterColor.getR())
                 .append(",").append(afterColor.getG()).append(",").append(afterColor.getB())
                 .append(")\" fill=\"freeze\" />\n");
 
@@ -205,7 +195,7 @@ public class ViewImplSVG implements IView {
         }
       }
     }
-    return logEllipse.toString();
+    return log.toString();
   }
 
   /**
@@ -217,7 +207,7 @@ public class ViewImplSVG implements IView {
    * @return a String of animate commands for the svg view.
    */
   private String svgRectangleCommands(IShape shape, ArrayList<ISynchronisedActionSet> actions) {
-    StringBuilder logRectangle = new StringBuilder();
+    StringBuilder log = new StringBuilder();
     for (ISynchronisedActionSet ia : actions) {
       Posn beforePosn = shape.getPosn();
       Dimension beforeDimension = shape.getDimension();
@@ -230,45 +220,45 @@ public class ViewImplSVG implements IView {
       for (IActionCommand ac : ia.getCommandList()) {
         switch (ac.officialName()) {
           case ("position"):
-            logRectangle.append("<animate attributeType=\"xml\" begin=\"base.begin+")
+            log.append("<animate attributeType=\"xml\" begin=\"base.begin+")
                 .append(ia.getStartTick() * secondsPerTick).append("ms\" ").append("dur=\"")
                 .append((ia.getEndTick() * secondsPerTick) - (ia.getStartTick() * secondsPerTick))
                 .append("ms\" ");
-            logRectangle.append("attributeName=\"x\" from=\"").append(beforePosn.getX())
+            log.append("attributeName=\"x\" from=\"").append(beforePosn.getX())
                 .append("\" ").append("to=\"").append(afterPosn.getX())
                 .append("\" fill=\"freeze\" />\n");
-            logRectangle.append("<animate attributeType=\"xml\" begin=\"base.begin+")
+            log.append("<animate attributeType=\"xml\" begin=\"base.begin+")
                 .append(ia.getStartTick() * secondsPerTick).append("ms\" ").append("dur=\"")
                 .append((ia.getEndTick() * secondsPerTick) - (ia.getStartTick() * secondsPerTick))
                 .append("ms\" ");
-            logRectangle.append("attributeName=\"y\" from=\"").append(beforePosn.getY())
+            log.append("attributeName=\"y\" from=\"").append(beforePosn.getY())
                 .append("\" ").append("to=\"").append(afterPosn.getY())
                 .append("\" fill=\"freeze\" />\n");
 
             break;
           case ("dimension"):
-            logRectangle.append("<animate attributeType=\"xml\" begin=\"base.begin+")
+            log.append("<animate attributeType=\"xml\" begin=\"base.begin+")
                 .append(ia.getStartTick() * secondsPerTick).append("ms\" ").append("dur=\"")
                 .append((ia.getEndTick() * secondsPerTick) - (ia.getStartTick() * secondsPerTick))
                 .append("ms\" ");
-            logRectangle.append("attributeName=\"width\" from=\"").append(beforeDimension.getW())
+            log.append("attributeName=\"width\" from=\"").append(beforeDimension.getW())
                 .append("\" ").append("to=\"").append(afterDimension.getW())
                 .append("\" fill=\"freeze\" />\n");
-            logRectangle.append("<animate attributeType=\"xml\" begin=\"base.begin+")
+            log.append("<animate attributeType=\"xml\" begin=\"base.begin+")
                 .append(ia.getStartTick() * secondsPerTick).append("ms\" ").append("dur=\"")
                 .append((ia.getEndTick() * secondsPerTick) - (ia.getStartTick() * secondsPerTick))
                 .append("ms\" ");
-            logRectangle.append("attributeName=\"height\" from=\"").append(beforeDimension.getH())
+            log.append("attributeName=\"height\" from=\"").append(beforeDimension.getH())
                 .append("\" ").append("to=\"").append(afterDimension.getH())
                 .append("\" fill=\"freeze\" />\n");
 
             break;
           case ("color"):
-            logRectangle.append("<animate attributeType=\"xml\" begin=\"base.begin+")
+            log.append("<animate attributeType=\"xml\" begin=\"base.begin+")
                 .append(ia.getStartTick() * secondsPerTick).append("ms\" ").append("dur=\"")
                 .append((ia.getEndTick() * secondsPerTick) - (ia.getStartTick() * secondsPerTick))
                 .append("ms\" ");
-            logRectangle.append("attributeName=\"fill\" " + "to=\"rgb(").append(afterColor.getR())
+            log.append("attributeName=\"fill\" " + "to=\"rgb(").append(afterColor.getR())
                 .append(",").append(afterColor.getG()).append(",").append(afterColor.getB())
                 .append(")\" fill=\"freeze\" />\n");
 
@@ -278,9 +268,18 @@ public class ViewImplSVG implements IView {
         }
       }
     }
-    return logRectangle.toString();
+    return log.toString();
   }
 
+  @Override
+  public void showView() {
+    try {
+      generateView();
+    } catch (IOException e) {
+      e.printStackTrace();
+      // intentionally left unedited
+    }
+  }
 
   @Override
   public void addControllerFeatures(IControllerFeatures features) {
