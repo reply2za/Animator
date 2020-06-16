@@ -8,7 +8,6 @@ import cs3500.easyanimator.controller.IControllerFeatures;
  */
 public interface IView {
 
-
   /**
    * Passes the features of the controller of type {@link IControllerFeatures} to the view. Allows
    * the view to retrieve these features from the controller to execute the proper reaction.

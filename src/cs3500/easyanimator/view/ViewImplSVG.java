@@ -286,9 +286,4 @@ public class ViewImplSVG implements IView {
   public void addControllerFeatures(IControllerFeatures features) {
     // intentionally left blank
   }
-
-  @Override
-  public String toString() {
-    return output.toString();
-  }
 }

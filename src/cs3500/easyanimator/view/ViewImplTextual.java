@@ -23,7 +23,7 @@ public class ViewImplTextual implements IView {
    * Takes in an output type for the view to output to.
    *
    * @param output the output type for the view
-   * @param m the read-only model of tyep {@link IReadOnlyModel}
+   * @param m      the read-only model of type {@link IReadOnlyModel}
    */
   public ViewImplTextual(Appendable output, IReadOnlyModel m) {
     this.output = output;
@@ -61,27 +61,31 @@ public class ViewImplTextual implements IView {
    */
   private String getAnimationLog(Map<String, ArrayList<ISynchronisedActionSet>> animationList,
       Map<String, IShape> shapeIdentifier) {
-    int logSpaceDivider = 6; // the amount of spaces between the start and end log
-    // make a StringBuilder that has all of the creation keys
     StringBuilder log = new StringBuilder();
+    int logSpaceDivider = 6; // the amount of spaces between the start and end log
+    IShape shape;
+    int startTick;
+    int endTick;
     log.append("Columns:\n");
     log.append("t x y w h r g b      t x y w h r g b");
     for (String key : animationList.keySet()) {
-      // IShape shapeName = shapeIdentifier.get(key);
+      shape = shapeIdentifier.get(key);
       log.append("\n").append("shape ").append(key).append(" ")
-          .append(shapeIdentifier.get(key).officialShapeName());
-
+          .append(shape.officialShapeName());
       for (ISynchronisedActionSet ia : animationList.get(key)) {
-        log.append("\n").append(ia.getStartTick()).append(" ")
-            .append(shapeIdentifier.get(key).toString());
+        startTick = ia.getStartTick();
+        endTick = ia.getEndTick();
+        log.append("\n").append(startTick).append(" ")
+            .append(shape.toString());
         log.append(" ".repeat(logSpaceDivider)); // adds the space divider
         // changes the shape in the map to the new shape
         // mutates here - mutateShapeAndReplace
-        for (int j = ia.getStartTick(); j < ia.getEndTick(); j++) {
-          ia.applyAnimation(shapeIdentifier.get(key));
-        } // mutates the shape to the desired ISynchronisedActionSet
-        log.append(ia.getEndTick()).append(" ")
-            .append(shapeIdentifier.get(key).toString());
+        for (int j = startTick; j < ia.getEndTick(); j++) {
+          // mutates the shape to the desired ISynchronisedActionSet
+          ia.applyAnimation(shape);
+        }
+        log.append(endTick).append(" ")
+            .append(shape.toString());
       }
     }
     return log.toString();
@@ -145,13 +149,7 @@ public class ViewImplTextual implements IView {
 
   @Override
   public void addControllerFeatures(IControllerFeatures features) {
-    animationList = features.getAnimationList();
-    shapeIdentifier = features.getShapeIdentifier();
-  }
-
-  @Override
-  public String toString() {
-    return output.toString();
+    // intentionally left blank
   }
 }
 

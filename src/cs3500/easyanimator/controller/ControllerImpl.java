@@ -36,19 +36,7 @@ public class ControllerImpl implements IControllerFeatures {
     System.exit(0);
   }
 
-  @Override
-  public LinkedHashMap<String, IShape> getShapeIdentifier() {
-    return model.getShapeIdentifier();
-  }
 
-  @Override
-  public LinkedHashMap<String, ArrayList<ISynchronisedActionSet>> getAnimationList() {
-    return model.getAnimationList();
-  }
-
-  /**
-   * Runs the animator by calling to view to create the visuals.
-   */
   @Override
   public void runAnimator() {
     view.showView();
