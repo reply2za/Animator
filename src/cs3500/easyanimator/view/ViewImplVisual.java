@@ -40,16 +40,17 @@ public class ViewImplVisual extends JFrame implements IView {
     listScroller.setAlignmentX(LEFT_ALIGNMENT);
     listScroller.getViewport().setScrollMode(JViewport.SIMPLE_SCROLL_MODE);
 
-    // delete later if not needed
-//    JFrame jFrame = new JFrame();
-//    jFrame.add(new UpdateDrawing(readOnlyModel.getAnimationList(),
-//        readOnlyModel.getShapeIdentifier(), ticksPerSecond));
+    // delete later if not needed - no noticeable effects
+  //    JFrame jFrame = new JFrame();
+  //    jFrame.add(new UpdateDrawing(readOnlyModel.getAnimationList(),
+  //        readOnlyModel.getShapeIdentifier(), ticksPerSecond));
 
     // to add the buttons
     JPanel buttonPane = new JPanel();
     buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.LINE_AXIS));
-    buttonPane.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
-    buttonPane.add(Box.createHorizontalGlue());
+    // delete later if not needed - no noticeable effects
+  //    buttonPane.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
+  //    buttonPane.add(Box.createHorizontalGlue()); // right aligns the button
     exitButton = new JButton("Exit");
     exitButton.setActionCommand("Exit Button");
     buttonPane.add(exitButton);
