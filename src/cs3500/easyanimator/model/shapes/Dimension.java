@@ -8,8 +8,8 @@ import java.util.Objects;
  */
 public class Dimension {
 
-  private int w;
-  int h;
+  private final int w;
+  private final int h;
 
   /**
    * A Dimension constructor. Requires two positive integers to represent the width and height
