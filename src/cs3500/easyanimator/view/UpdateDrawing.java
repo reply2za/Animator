@@ -107,9 +107,9 @@ public class UpdateDrawing extends JPanel implements ActionListener {
         }
       }
       // Animations seem to run fine without these two method calls
-      //animationList.put(name, currentAni);
+      //animationList.put(name, listOfActions);
       //shapeIdentifier.put(name, currentShape);
     }
-    repaint();
+      repaint();
   }
 }
