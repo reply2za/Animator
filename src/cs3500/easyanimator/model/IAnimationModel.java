@@ -69,16 +69,8 @@ public interface IAnimationModel {
    *               cs3500.easyanimator.model.shapes.Triangle} 'ellipse' - creates a new {@link
    *               cs3500.easyanimator.model.shapes.Oval} 'rectangle' - creates a new {@link
    *               cs3500.easyanimator.model.shapes.Rectangle}
-   * @param x      the shape's x position
-   * @param y      the shape's y position
-   * @param width  shape's width
-   * @param height shape's height
-   * @param red    shape's red value
-   * @param green  shape's green value
-   * @param blue   shape's blue value
    */
-  void createShapeWithoutInstance(String name, String type, int x, int y, int width, int height,
-      int red, int green, int blue);
+  void createShapeWithoutInstance(String name, String type);
 
 
   /**

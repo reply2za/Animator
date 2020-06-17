@@ -47,8 +47,7 @@ public class ReadOnlyModelImpl implements IReadOnlyModel {
   }
 
   @Override
-  public void createShapeWithoutInstance(String name, String type, int x, int y, int w, int h,
-      int r, int g, int b) throws UnsupportedOperationException {
+  public void createShapeWithoutInstance(String name, String type) throws UnsupportedOperationException {
     throw new UnsupportedOperationException("Operation not supported in this readonly.");
   }
 

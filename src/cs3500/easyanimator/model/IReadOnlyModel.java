@@ -75,18 +75,10 @@ public interface IReadOnlyModel extends IAnimationModel {
    * @param type   the type of shape based on specific keywords: 'triangle' - creates a new {@link
    *               Triangle} 'ellipse' - creates a new {@link Oval} 'rectangle' - creates a new
    *               {@link Rectangle}
-   * @param x      the shape's x position
-   * @param y      the shape's y position
-   * @param width  shape's width
-   * @param height shape's height
-   * @param red    shape's red value
-   * @param green  shape's green value
-   * @param blue   shape's blue value
    * @throws UnsupportedOperationException if called
    */
   @Override
-  void createShapeWithoutInstance(String name, String type, int x, int y, int width, int height,
-      int red, int green, int blue) throws UnsupportedOperationException;
+  void createShapeWithoutInstance(String name, String type) throws UnsupportedOperationException;
 
   /**
    * Unsupported in this read-only implementation. Will throw an {@link

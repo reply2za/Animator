@@ -147,13 +147,12 @@ public class AnimationModelImpl implements IAnimationModel {
   }
 
   @Override
-  public void createShapeWithoutInstance(String name, String type, int x, int y, int w, int h,
-      int r, int g, int b) {
+  public void createShapeWithoutInstance(String name, String type) {
 
     IShape shape;
-    Posn p = new Posn(x, y);
-    Dimension d = new Dimension(w, h);
-    Color c = new Color(r, g, b);
+    Posn p = null;
+    Dimension d = null;
+    Color c = null;
 
     switch (type) {
       case ("triangle"):
@@ -265,10 +264,8 @@ public class AnimationModelImpl implements IAnimationModel {
   public void addMotions(String name, int t1, int x1, int y1, int w1,
       int h1, int r1, int g1, int b1, int t2, int x2, int y2, int w2, int h2, int r2, int g2,
       int b2) {
+    IShape oldShape = shapeIdentifier.get(name);
     IShape newShape;
-    Color zeroColor = new Color(0, 0, 0);
-    Dimension zeroDim = new Dimension(0, 0);
-    Posn zeroPosn = new Posn(0, 0);
     if (x1 != x2 || y1 != y2) {
       this.add(name, t1, t2, new ChangePosition(x2, y2, t2 - t1));
     }
@@ -278,16 +275,16 @@ public class AnimationModelImpl implements IAnimationModel {
     if (r1 != r2 || g1 != g2 || b1 != b2) {
       this.add(name, t1, t2, new ChangeColor(r2, g2, b2, t2 - t1));
     }
-    if (shapeIdentifier.get(name).getColor().equals(zeroColor)
-        && shapeIdentifier.get(name).getPosn().equals(zeroPosn)
-        && shapeIdentifier.get(name).getDimension().equals(zeroDim)) {
-      IShape oldShape = shapeIdentifier.get(name);
-      String type = oldShape.officialShapeName();
-      if (type.equalsIgnoreCase("Rectangle")) {
+    // if any of the values are null then overwrite all the values with the given initials
+    if (oldShape.getColor() == null
+        || oldShape.getPosn() == null
+        || oldShape.getDimension() == null) {
+      String shapeType = oldShape.officialShapeName();
+      if (shapeType.equalsIgnoreCase("Rectangle")) {
         newShape = new Rectangle(new Posn(x1, y1), new Dimension(w1, h1), new Color(r1, g1, b2));
-      } else if (type.equalsIgnoreCase("Oval")) {
+      } else if (shapeType.equalsIgnoreCase("Oval")) {
         newShape = new Oval(new Posn(x1, y1), new Dimension(w1, h1), new Color(r1, g1, b1));
-      } else if (type.equalsIgnoreCase("Triangle")) {
+      } else if (shapeType.equalsIgnoreCase("Triangle")) {
         newShape = new Triangle(new Posn(x1, y1), new Dimension(w1, h1), new Color(r1, g1, b1));
       } else {
         throw new IllegalArgumentException("Unexpected shape name given.");
@@ -420,16 +417,13 @@ public class AnimationModelImpl implements IAnimationModel {
 
       switch (type) {
         case ("ellipse"):
-          model.createShapeWithoutInstance(name, "ellipse",
-              0, 0, 0, 0, 0, 0, 0);
+          model.createShapeWithoutInstance(name, "ellipse");
           break;
         case ("rectangle"):
-          model.createShapeWithoutInstance(name, "rectangle",
-              0, 0, 0, 0, 0, 0, 0);
+          model.createShapeWithoutInstance(name, "rectangle");
           break;
         case ("triangle"):
-          model.createShapeWithoutInstance(name, "triangle", 0, 0, 0,
-              0, 0, 0, 0);
+          model.createShapeWithoutInstance(name, "triangle");
           break;
         default:
           throw new IllegalArgumentException("Not a valid shape type.");
@@ -491,7 +485,6 @@ public class AnimationModelImpl implements IAnimationModel {
     @Override
     public AnimationBuilder<IAnimationModel> addKeyframe(String name, int t, int x, int y, int w,
         int h, int r, int g, int b) {
-      IShape shape = model.getShape(name);
       List<Integer> listOfTicks = model.getTicks(name);
       if ((listOfTicks.get(listOfTicks.size() - 1) < t)) {
         model.addMotions(name, listOfTicks.get(listOfTicks.size() - 1), x + 1, y + 1, w + 1,
