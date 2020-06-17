@@ -10,6 +10,7 @@ import cs3500.easyanimator.view.IView;
 import cs3500.easyanimator.view.ViewImplSVG;
 import cs3500.easyanimator.view.ViewImplTextual;
 import cs3500.easyanimator.view.ViewImplVisual;
+import cs3500.easyanimator.view.ViewImplVisualControllable;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -42,17 +43,17 @@ public class Run {
 
     // ------- START: NOT A PART OF THE ASSIGNMENT --------------
     // this section allows command line arguments in the console
-
-    Scanner s = new Scanner(System.in).useDelimiter(System.lineSeparator());
-    StringBuilder all = new StringBuilder();
-    String temp = "";
-    all.append(s.next());
-    while (!temp.isBlank()) {
-      temp = s.next();
-      all.append(temp);
+    if (args.length == 0) {
+      Scanner s = new Scanner(System.in).useDelimiter(System.lineSeparator());
+      StringBuilder all = new StringBuilder();
+      String temp = "";
+      all.append(s.next());
+      while (!temp.isBlank()) {
+        temp = s.next();
+        all.append(temp);
+      }
+      args = all.toString().split(" ");
     }
-    args = all.toString().split(" ");
-
     // ------- END: NOT A PART OF THE ASSIGNMENT ----------------
 
     String fileString = "";
@@ -113,6 +114,9 @@ public class Run {
         break;
       case ("visual"):
         view = new ViewImplVisual(Integer.parseInt(speedString), readOnlyModel);
+        break;
+      case ("edit"):
+        view = new ViewImplVisualControllable(Integer.parseInt(speedString), readOnlyModel);
         break;
 
       default:
