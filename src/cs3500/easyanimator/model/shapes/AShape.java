@@ -19,10 +19,8 @@ abstract class AShape implements IShape {
    * A standard {@link AShape} constructor. Assigns the three three customizable fields to the
    * shape. That is a {@link Posn} representing Position, {@link Dimension} representing dimension,
    * and {@link Color} representing color.
-   *
    */
   AShape(Posn p, Dimension d, Color c, boolean v) {
-
     this.p = p;
     this.d = d;
     this.c = c;
@@ -34,11 +32,21 @@ abstract class AShape implements IShape {
     return this.p.toString() + " " + this.d.toString() + " " + this.c.toString();
   }
 
+  // using rounding to get more precise positions
   @Override
   public void changePositionByTick(int x, int y, int ticks) {
-    this.p = new Posn(this.p.getX() + (x - this.p.getX()) / ticks,
-        this.p.getY() + (y - this.p.getY()) / ticks);
+    this.p = new Posn(
+        this.p.getX() + (int) (Math.round((x - this.p.getX()) / (double) ticks)),
+        this.p.getY() + (int) (Math.round((y - this.p.getY()) / (double) ticks)));
   }
+
+  //old-method
+  //  @Override
+  //  public void changePositionByTick(int x, int y, int ticks) {
+  //    this.p = new Posn(
+  //        this.p.getX() + (x - this.p.getX()) /  ticks,
+  //        this.p.getY() + (y - this.p.getY()) /  ticks);
+  //  }
 
   @Override
   public void changeDimensionByTick(int w, int h, int ticks) {
@@ -48,7 +56,8 @@ abstract class AShape implements IShape {
 
   @Override
   public void changeColorByTick(int r, int g, int b, int ticks) {
-    this.c = new Color(c.getR() + (r - c.getR()) / ticks, c.getG() + (g - c.getG()) / ticks,
+    this.c = new Color(c.getR() + (r - c.getR()) / ticks,
+        c.getG() + (g - c.getG()) / ticks,
         c.getB() + (b - c.getB()) / ticks);
   }
 
