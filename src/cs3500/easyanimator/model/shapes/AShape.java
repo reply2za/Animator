@@ -20,12 +20,9 @@ abstract class AShape implements IShape {
    * shape. That is a {@link Posn} representing Position, {@link Dimension} representing dimension,
    * and {@link Color} representing color.
    *
-   * @throws IllegalArgumentException if any of the inputs are null
    */
   AShape(Posn p, Dimension d, Color c, boolean v) {
-    if (p == null || d == null || c == null) {
-      throw new IllegalArgumentException("Input values cannot be null.");
-    }
+
     this.p = p;
     this.d = d;
     this.c = c;
