@@ -31,9 +31,13 @@ public class UpdateDrawing extends JPanel implements ActionListener {
    * @param animationList   The list of animations handled.
    * @param shapeIdentifier The shapes to be drawn.
    * @param secondsPerTick  The speed in which the animation runs.
+   * @throws IllegalArgumentException if the given speed (secondsPerTick) is non-positive.
    */
   UpdateDrawing(LinkedHashMap<String, ArrayList<ISynchronisedActionSet>> animationList,
       LinkedHashMap<String, IShape> shapeIdentifier, int secondsPerTick) {
+    if (secondsPerTick <= 0) {
+      throw new IllegalArgumentException("Speed must be a positive integer.");
+    }
     this.secondsPerTick = secondsPerTick;
     this.shapeIdentifier = shapeIdentifier;
     this.animationList = animationList;
@@ -92,7 +96,7 @@ public class UpdateDrawing extends JPanel implements ActionListener {
       ArrayList<ISynchronisedActionSet> listOfActions = animationList.get(name);
       IShape currentShape = shapeIdentifier.get(name);
       for (ISynchronisedActionSet ai : listOfActions) {
-        // removes the synchronized actions that have already occurred
+        // removes the synchronized actions that are completed
         if(ticks > ai.getEndTick()) {
           listOfActions.remove(0);
           break;
@@ -102,10 +106,10 @@ public class UpdateDrawing extends JPanel implements ActionListener {
           break;
         }
       }
-      // Animations seem to run fine without these two
+      // Animations seem to run fine without these two method calls
       //animationList.put(name, currentAni);
       //shapeIdentifier.put(name, currentShape);
-      repaint();
     }
+    repaint();
   }
 }

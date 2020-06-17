@@ -19,8 +19,8 @@ import javax.swing.JViewport;
  */
 public class ViewImplVisual extends JFrame implements IView {
 
-  JButton exitButton;
-  IReadOnlyModel readOnlyModel;
+  protected JButton exitButton;
+  protected IReadOnlyModel readOnlyModel;
 
   /**
    * Singular constructor that takes in the speed of the animation to be played.
@@ -32,7 +32,7 @@ public class ViewImplVisual extends JFrame implements IView {
 
     this.readOnlyModel = readOnlyModel;
 
-    setLocation(0, 0);
+    setLocation(readOnlyModel.getCanvasX(), readOnlyModel.getCanvasY());
     setSize(readOnlyModel.getCanvasWidth(), readOnlyModel.getCanvasHeight());
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -40,9 +40,11 @@ public class ViewImplVisual extends JFrame implements IView {
     listScroller.setAlignmentX(LEFT_ALIGNMENT);
     listScroller.getViewport().setScrollMode(JViewport.SIMPLE_SCROLL_MODE);
 
-    JFrame jFrame = new JFrame();
-    jFrame.add(new UpdateDrawing(readOnlyModel.getAnimationList(),
-        readOnlyModel.getShapeIdentifier(), ticksPerSecond));
+    // delete later if not needed
+//    JFrame jFrame = new JFrame();
+//    jFrame.add(new UpdateDrawing(readOnlyModel.getAnimationList(),
+//        readOnlyModel.getShapeIdentifier(), ticksPerSecond));
+
     // to add the buttons
     JPanel buttonPane = new JPanel();
     buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.LINE_AXIS));
