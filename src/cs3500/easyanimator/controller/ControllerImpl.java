@@ -1,11 +1,8 @@
 package cs3500.easyanimator.controller;
 
 import cs3500.easyanimator.model.IAnimationModel;
-import cs3500.easyanimator.model.actions.ISynchronisedActionSet;
-import cs3500.easyanimator.model.shapes.IShape;
+
 import cs3500.easyanimator.view.IView;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 
 /**
  * This represents an instance of our controller. It handles both the view and model to delegate to

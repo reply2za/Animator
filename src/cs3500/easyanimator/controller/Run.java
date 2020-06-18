@@ -43,17 +43,25 @@ public class Run {
 
     // ------- START: NOT A PART OF THE ASSIGNMENT --------------
     // this section allows command line arguments in the console
+    Scanner s = new Scanner(System.in);
     if (args.length == 0) {
-      Scanner s = new Scanner(System.in).useDelimiter(System.lineSeparator());
-      StringBuilder all = new StringBuilder();
-      String temp = "";
-      all.append(s.next());
-      while (!temp.isBlank()) {
-        temp = s.next();
-        all.append(temp);
+      args = new String[6];
+      args[0] = "-in";
+      String n = s.next();
+      s.close();
+      if (n.equalsIgnoreCase("b")) {
+        args[1] = "big-bang-big-crunch.txt";
+      } else if (n.equalsIgnoreCase("bb")) {
+        args[1] = "buildings.txt";
       }
-      args = all.toString().split(" ");
+      args[2] = "-view";
+      args[3] = "edit"; // set your view
+      args[4] = "-speed";
+      args[5] = "1";
     }
+
+    // -in big-bang-big-crunch.txt -view visual -speed 20
+
     // ------- END: NOT A PART OF THE ASSIGNMENT ----------------
 
     String fileString = "";
@@ -62,7 +70,6 @@ public class Run {
     String speedString = "1";
     File file;
     IView view;
-    IControllerFeatures c;
     boolean isInputCalled = false;
     boolean isViewCalled = false;
 
@@ -97,7 +104,7 @@ public class Run {
 
     // Gets the input file
     file = new File(fileString);
-    StringBuilder sb = new StringBuilder(outString);
+    StringBuilder sb = new StringBuilder();
     // Creates a model from the input file
     AnimationBuilder<IAnimationModel> builder = new Builder();
     IAnimationModel model = AnimationReader.parseFile(new FileReader(file), builder);
@@ -110,7 +117,7 @@ public class Run {
         view = new ViewImplTextual(sb, readOnlyModel);
         break;
       case ("svg"):
-        view = new ViewImplSVG(sb, readOnlyModel);
+        view = new ViewImplSVG(sb, Integer.parseInt(speedString), readOnlyModel);
         break;
       case ("visual"):
         view = new ViewImplVisual(Integer.parseInt(speedString), readOnlyModel);
@@ -118,7 +125,6 @@ public class Run {
       case ("edit"):
         view = new ViewImplVisualControllable(Integer.parseInt(speedString), readOnlyModel);
         break;
-
       default:
         throw new IllegalArgumentException("Invalid view argument");
     }

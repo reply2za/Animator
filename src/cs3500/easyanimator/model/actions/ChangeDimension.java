@@ -43,4 +43,29 @@ public class ChangeDimension implements IActionCommand {
   public String officialName() {
     return "dimension";
   }
+
+  /**
+   * Returns the amount of ticks that are left for the action command.
+   *
+   * @return the number of ticks left
+   */
+  @Override
+  public int getTicksLeft() {
+    return this.ticks;
+  }
+
+  /**
+   * Gets the field values as an array. Each array index for each field. Fields differ depending on
+   * the implementation. Order of the fields are placed depending on the implementation of the
+   * constructor.
+   *
+   * @return the values of the fields within a string
+   */
+  @Override
+  public int[] getFieldValues() {
+    int[] fields = new int[2];
+    fields[0] = this.w;
+    fields[1] = this.h;
+    return fields;
+  }
 }

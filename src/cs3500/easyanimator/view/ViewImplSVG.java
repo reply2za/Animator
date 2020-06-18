@@ -12,6 +12,7 @@ import cs3500.easyanimator.model.shapes.Posn;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import javax.swing.text.View;
 
 /**
  * SVG View for the animation model. This outputs a file that can be read by an svg reader to create
@@ -34,19 +35,6 @@ public class ViewImplSVG implements IView {
   public ViewImplSVG(Appendable output, int secondsPerTick, IReadOnlyModel readOnlyModel) {
     this.output = output;
     this.secondsPerTick = 1000 / secondsPerTick;
-    this.readOnlyModel = readOnlyModel;
-  }
-
-  /**
-   * An alternate constructor with a set speed of 1 tick per second. Requires an appendable to write
-   * the output to and a read-only model.
-   *
-   * @param output        the appendable type to be outputted
-   * @param readOnlyModel the read-only model of type {@link IReadOnlyModel}
-   */
-  public ViewImplSVG(Appendable output, IReadOnlyModel readOnlyModel) {
-    this.output = output;
-    this.secondsPerTick = 1000;
     this.readOnlyModel = readOnlyModel;
   }
 

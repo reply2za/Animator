@@ -24,6 +24,7 @@ public class UpdateDrawing extends JPanel implements ActionListener {
   LinkedHashMap<String, ArrayList<ISynchronisedActionSet>> animationList;
   int secondsPerTick;
   int ticks;
+  //java.awt.Dimension d;
 
   /**
    * This is the constructor for the class that handles updating the view as the time passes.
@@ -52,11 +53,11 @@ public class UpdateDrawing extends JPanel implements ActionListener {
   @Override
   public void paint(Graphics g) {
     super.paintComponents(g);
+    //this.setPreferredSize(d);
     Graphics2D g2d = (Graphics2D) g;
     // paint all shapes
     for (String key : shapeIdentifier.keySet()) {
       IShape currentShape = shapeIdentifier.get(key);
-
       // Get all of the fields to easily call later
       Posn currentPosn = currentShape.getPosn();
       Dimension currentDimension = currentShape.getDimension();
@@ -96,13 +97,18 @@ public class UpdateDrawing extends JPanel implements ActionListener {
       ArrayList<ISynchronisedActionSet> listOfActions = animationList.get(name);
       IShape currentShape = shapeIdentifier.get(name);
       for (ISynchronisedActionSet ai : listOfActions) {
-        // removes the synchronized actions that are completed
-        if(ticks > ai.getEndTick()) {
-          listOfActions.remove(0);
-          break;
-        }
-        if (ticks >= ai.getStartTick()) {
+        if (ticks <= ai.getEndTick() && ticks >= ai.getStartTick()) {
           ai.applyAnimation(currentShape);
+          // attempts to change size of the panel if shape goes off screen
+ /*         if (currentShape.getPosn().getX() > d.width) {
+            this.d.setSize(currentShape.getPosn().getX()
+                    + currentShape.getDimension().getW() + 40,
+                d.height);
+          }
+          if (currentShape.getPosn().getY() > d.height) {
+            this.d.setSize(d.width,
+                currentShape.getPosn().getY() + currentShape.getDimension().getH() + 40);
+          }*/
           break;
         }
       }
@@ -110,6 +116,30 @@ public class UpdateDrawing extends JPanel implements ActionListener {
       //animationList.put(name, listOfActions);
       //shapeIdentifier.put(name, currentShape);
     }
-      repaint();
+    repaint();
+  }
+
+  public void setTicks(int ticks) {
+    System.out.println("Current ticks are " + this.ticks + ". Setting ticks to: " + ticks);
+    this.ticks = ticks;
+    System.out.println("Ticks have been set: " + this.ticks);
+  }
+
+  public void setAnimationList(LinkedHashMap<String, ArrayList<ISynchronisedActionSet>> aniList) {
+    System.out.println("before clear: " + aniList.size()); // some number
+    this.animationList.clear();
+    System.out.println("after clear: " + aniList.size()); // 0
+    System.out.println("size of ani: " + animationList.size());
+
+    this.animationList.putAll(aniList);
+    System.out.println("size of final ani: " + animationList.size());
+    repaint();
+  }
+
+  public void setShapeIdentifier(LinkedHashMap<String, IShape> shapes) {
+    this.shapeIdentifier.clear();
+    //System.out.println("size of size: " + shapes.size());
+    this.shapeIdentifier.putAll(shapes);
+    repaint();
   }
 }

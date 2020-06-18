@@ -270,7 +270,7 @@ public class AnimationModelImpl implements IAnimationModel {
       this.add(name, t1, t2, new ChangePosition(x2, y2, t2 - t1));
     }
     if (w1 != w2 || h1 != h2) {
-      this.add(name, t1, t2, new ChangeDimension(x2, y2, t2 - t1));
+      this.add(name, t1, t2, new ChangeDimension(w2, h2, t2 - t1));
     }
     if (r1 != r2 || g1 != g2 || b1 != b2) {
       this.add(name, t1, t2, new ChangeColor(r2, g2, b2, t2 - t1));
@@ -371,7 +371,7 @@ public class AnimationModelImpl implements IAnimationModel {
     IAnimationModel model;
 
     /**
-     * A constrcutor for a builder that has a singular model to construct.
+     * A constructor for a builder that has a singular model to construct.
      */
     public Builder() {
       this.model = new AnimationModelImpl();
