@@ -62,17 +62,17 @@ public class AnimationModelImpl implements IAnimationModel {
     ArrayList<ISynchronisedActionSet> unsortedlist = animationList.get(key);
     ArrayList<ISynchronisedActionSet> problemlist = new ArrayList<>();
     ArrayList<ISynchronisedActionSet> nonproblemlist = new ArrayList<>();
-    for (ISynchronisedActionSet ia : unsortedlist) {
-      if (timeConflict(start, end, ia.getStartTick(), ia.getEndTick())) {
-        if (ia.containsInstanceOf(ac)) { //containsSameType compares command types
+    for (ISynchronisedActionSet isa : unsortedlist) {
+      if (timeConflict(start, end, isa.getStartTick(), isa.getEndTick())) {
+        if (isa.containsInstanceOf(ac)) { //containsSameType compares command types
           throw new
               IllegalArgumentException("Cannot have two of the same "
               + "commands overlapping in ticks");
         } else {
-          problemlist.add(ia);
+          problemlist.add(isa);
         }
       } else {
-        nonproblemlist.add(ia);
+        nonproblemlist.add(isa);
         // if no time discrepancy then make the animation an
         // ISynchronisedActionSet and add it to the right place in "animationList"
       }
@@ -92,6 +92,148 @@ public class AnimationModelImpl implements IAnimationModel {
     Collections.sort(nonproblemlist);
     //replace the formatted list of animation list
     animationList.put(key, nonproblemlist);
+  }
+
+  @Override
+  public void remove(String key, int startTick, int endTick) {
+    if (animationList.get(key) == null) {
+      throw new IllegalArgumentException("Shape '" + key + "' cannot be found.");
+    }
+    int index = 0;
+    boolean runAgain = false;
+    boolean hasRunTwice = false;
+
+    for (ISynchronisedActionSet ia : animationList.get(key)) {
+
+      // in case that remove is not working at either of the ends
+      if (endTick <= ia.getStartTick() && index <= 1) {
+        animationList.get(key).remove(index);
+        break;
+      }
+      if (startTick <= ia.getEndTick() && index <= animationList.get(key).size() - 1) {
+        animationList.get(key).remove(index);
+        break;
+      }
+      if (startTick >= ia.getStartTick() && endTick <= ia.getEndTick()) {
+        animationList.get(key).remove(index);
+        hasRunTwice = true;
+        runAgain = !runAgain;
+      }
+      if (!runAgain) {
+        break;
+      }
+      index++;
+    }
+
+    // if either are still null then we removed something at the start or end of the animations,
+    // no stitching needed
+    if (hasRunTwice) {
+      return;
+    }
+
+    int newStartTick = 0;
+    int newEndTick = 0;
+    ArrayList<IActionCommand> startingCommandList = null;
+    ArrayList<IActionCommand> endingCommandList = null;
+    ArrayList<ISynchronisedActionSet> loias = animationList.get(key);
+    boolean keepChecking = true;
+
+    // have the starting and ending ticks we need to stitch together
+    for (ISynchronisedActionSet actionSet : loias) {
+      if (startTick >= actionSet.getEndTick() && keepChecking) {
+        newStartTick = actionSet.getEndTick();
+        startingCommandList = actionSet.getCommandList();
+        keepChecking = false;
+      } else if (!keepChecking) {
+        newEndTick = actionSet.getStartTick();
+        endingCommandList = actionSet.getCommandList();
+        break;
+      }
+    }
+
+    // second check to see if the command removed was at either end of the list of
+    // synchronized commands
+    if (startingCommandList == null || endingCommandList == null) {
+      return;
+    }
+
+    // ensure that all commands are set in both of the synchronized action set
+    ChangeColor cc1 = new ChangeColor(0, 0, 0, 1);
+    ChangeColor cc2 = new ChangeColor(0, 0, 0, 1);
+    ChangePosition cp1 = new ChangePosition(0, 0, 1);
+    ChangePosition cp2 = new ChangePosition(0, 0, 1);
+    ChangeDimension cd1 = new ChangeDimension(0, 0, 1);
+    ChangeDimension cd2 = new ChangeDimension(0, 0, 1);
+    String commandName = "null";
+    for (int i = 0; i < 2; i++) {
+      // get all of the commands from the list
+      commandName = "null";
+      if (startingCommandList.size() - 1 >= i) {
+        commandName = startingCommandList.get(0).officialName();
+      }
+      switch (commandName) {
+        case ("position"):
+          cp1 = (ChangePosition) startingCommandList.get(i);
+          break;
+        case ("dimension"):
+          cd1 = (ChangeDimension) startingCommandList.get(i);
+          break;
+        case ("color"):
+          cc1 = (ChangeColor) startingCommandList.get(i);
+          break;
+      }
+    }
+    for (int i = 0; i < 2; i++) {
+      // get all of the commands from the list
+      commandName = "null";
+      if (startingCommandList.size() - 1 >= i) {
+        commandName = endingCommandList.get(0).officialName();
+      }
+      switch (commandName) {
+        case ("position"):
+          cp2 = (ChangePosition) endingCommandList.get(i);
+          break;
+
+        case ("dimension"):
+          cd2 = (ChangeDimension) endingCommandList.get(i);
+          break;
+
+        case ("color"):
+          cc2 = (ChangeColor) endingCommandList.get(i);
+          break;
+      }
+    }
+
+    // create the new commands from the old
+    // do the fields of the end commands minus the fields of the start commands
+    int[] cc1a = cc1.getFieldValues();
+    int[] cc2a = cc2.getFieldValues();
+    int[] cd1a = cd1.getFieldValues();
+    int[] cd2a = cd2.getFieldValues();
+    int[] cp1a = cp1.getFieldValues();
+    int[] cp2a = cp2.getFieldValues();
+
+    // extract the change between the fields
+    int newR = cc1a[0] - cc2a[0];
+    int newG = cc1a[1] - cc2a[1];
+    int newB = cc1a[2] - cc2a[2];
+    int newW = cd1a[0] - cd2a[0];
+    int newH = cd1a[1] - cd2a[1];
+    int newX = cp1a[0] - cp2a[0];
+    int newY = cp1a[1] - cp2a[1];
+    // add the difference between the two
+    if (newR != 0 && newG != 0 && newB != 0) {
+      add(key, newStartTick, newEndTick,
+          new ChangeColor(newR, newG, newB, endTick - startTick));
+    }
+    if (newW != 0 && newH != 0) {
+      add(key, newStartTick, newEndTick,
+          new ChangeDimension(newW, newH, endTick - startTick));
+    }
+    if (newX != 0 && newY != 0) {
+      add(key, newStartTick, newEndTick,
+          new ChangePosition(newX, newY, endTick - startTick));
+    }
   }
 
   //Return true if two different AnimationCommands have a time overlap
@@ -116,7 +258,7 @@ public class AnimationModelImpl implements IAnimationModel {
   }
 
   @Override
-  public void remove(String key, int startTick,
+  public void removeActionCommand(String key, int startTick,
       int endTick, IActionCommand ac) {
     if (animationList.get(key) == null) {
       throw new IllegalArgumentException("Shape '" + key + "' cannot be found.");

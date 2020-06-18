@@ -35,6 +35,19 @@ public class ReadOnlyModelImpl implements IReadOnlyModel {
     throw new UnsupportedOperationException("Operation not supported in this readonly.");
   }
 
+
+  @Override
+  public void remove(String key, int startTick, int endTick) throws UnsupportedOperationException {
+    throw new UnsupportedOperationException("Operation not supported in this readonly.");
+  }
+
+
+  @Override
+  public void removeActionCommand(String key, int startTick, int endTick, IActionCommand ac)
+      throws UnsupportedOperationException {
+    throw new UnsupportedOperationException("Operation not supported in this readonly.");
+  }
+
   @Override
   public void remove(String key, int startTick, int endTick, IActionCommand ac)
       throws UnsupportedOperationException {
@@ -47,7 +60,8 @@ public class ReadOnlyModelImpl implements IReadOnlyModel {
   }
 
   @Override
-  public void createShapeWithoutInstance(String name, String type) throws UnsupportedOperationException {
+  public void createShapeWithoutInstance(String name, String type)
+      throws UnsupportedOperationException {
     throw new UnsupportedOperationException("Operation not supported in this readonly.");
   }
 

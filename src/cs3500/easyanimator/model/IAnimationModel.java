@@ -37,6 +37,16 @@ public interface IAnimationModel {
   void clear();
 
   /**
+   * Removes a timeframe from a Shapes commands.
+   *
+   * @param key       the key that is used to erase an {@link IActionCommand} from a shapes
+   *                  commands.
+   * @param startTick the start time of the {@link IActionCommand} being removed.
+   * @param endTick   the end time of the {@link IActionCommand} being removed.
+   */
+  void remove(String key, int startTick, int endTick);
+
+  /**
    * Removes an {@link IActionCommand} from a Shapes commands.
    *
    * @param key       the key that is used to erase an {@link IActionCommand} from a shapes
@@ -45,7 +55,7 @@ public interface IAnimationModel {
    * @param endTick   the end time of the {@link IActionCommand} being removed.
    * @param ac        the {@link IActionCommand} that will be removed from the list of operations.
    */
-  void remove(String key, int startTick,
+  void removeActionCommand(String key, int startTick,
       int endTick, IActionCommand ac);
 
 
@@ -57,8 +67,6 @@ public interface IAnimationModel {
    * @throws IllegalArgumentException if there already exists a shape with that name.
    */
   void createShape(String name, IShape shape);
-
-  // TODO: Add to README as a change to the model interface : new method
 
   /**
    * Creates a new {@link IShape} in the model that can be manipulated via actions. Does not require

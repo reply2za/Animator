@@ -51,7 +51,7 @@ public interface IReadOnlyModel extends IAnimationModel {
    * @param ac        the {@link IActionCommand} that will be removed from the list of operations.
    * @throws UnsupportedOperationException if called
    */
-  @Override
+
   void remove(String key, int startTick, int endTick, IActionCommand ac)
       throws UnsupportedOperationException;
 
