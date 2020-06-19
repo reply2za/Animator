@@ -49,10 +49,21 @@ public class Run {
       args[0] = "-in";
       String n = s.next();
       s.close();
+      // connecting a letter to a file
       if (n.equalsIgnoreCase("b")) {
         args[1] = "big-bang-big-crunch.txt";
       } else if (n.equalsIgnoreCase("bb")) {
         args[1] = "buildings.txt";
+      } else if (n.equalsIgnoreCase("t") || n.equalsIgnoreCase("t12")) {
+        args[1] = "toh-12.txt";
+      } else if (n.equalsIgnoreCase("t8")) {
+        args[1] = "toh-8.txt";
+      } else if (n.equalsIgnoreCase("t5")) {
+        args[1] = "toh-5.txt";
+      } else if (n.equalsIgnoreCase("t3")) {
+        args[1] = "toh-3.txt";
+      } else if (n.equalsIgnoreCase("h")) {
+        args[1] = "hanoi.txt";
       }
       args[2] = "-view";
       args[3] = "edit"; // set your view

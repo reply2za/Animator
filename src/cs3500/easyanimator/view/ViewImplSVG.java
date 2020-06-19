@@ -12,7 +12,6 @@ import cs3500.easyanimator.model.shapes.Posn;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import javax.swing.text.View;
 
 /**
  * SVG View for the animation model. This outputs a file that can be read by an svg reader to create

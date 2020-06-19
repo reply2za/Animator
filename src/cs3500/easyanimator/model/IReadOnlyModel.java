@@ -1,11 +1,7 @@
 package cs3500.easyanimator.model;
 
 import cs3500.easyanimator.model.actions.IActionCommand;
-import cs3500.easyanimator.model.actions.ISynchronisedActionSet;
 import cs3500.easyanimator.model.shapes.IShape;
-import cs3500.easyanimator.model.shapes.Oval;
-import cs3500.easyanimator.model.shapes.Rectangle;
-import cs3500.easyanimator.model.shapes.Triangle;
 import java.util.Map;
 
 /**
@@ -71,10 +67,9 @@ public interface IReadOnlyModel extends IAnimationModel {
    * Unsupported in this read-only implementation. Will throw an {@link
    * UnsupportedOperationException} if called.
    *
-   * @param name   the unique name of the shape
-   * @param type   the type of shape based on specific keywords: 'triangle' - creates a new {@link
-   *               Triangle} 'ellipse' - creates a new {@link Oval} 'rectangle' - creates a new
-   *               {@link Rectangle}
+   * @param name the unique name of the shape
+   * @param type the type of shape based on specific keywords: 'triangle' - creates a new 'ellipse'
+   *             - creates a new 'rectangle' - creates a new rectangle
    * @throws UnsupportedOperationException if called
    */
   @Override

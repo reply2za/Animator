@@ -37,9 +37,9 @@ public interface IShape {
 
   /**
    * Given the desired final w and h dimensions of the shape and the number of ticks in which that
-   * final dimension is to be achieved. Utilizes rate of change to alter the shape's dimension by the
-   * amount it should over a single tick. This method should be called by the given number of ticks
-   * to achieve the desired final dimension.
+   * final dimension is to be achieved. Utilizes rate of change to alter the shape's dimension by
+   * the amount it should over a single tick. This method should be called by the given number of
+   * ticks to achieve the desired final dimension.
    *
    * @param w     the shape's new width
    * @param h     the shape's new height
@@ -48,8 +48,8 @@ public interface IShape {
   void changeDimensionByTick(int w, int h, int ticks);
 
   /**
-   * Given the desired final r, g, and b color values of the shape and the number of ticks in which that
-   * final color is to be achieved. Utilizes rate of change to alter the shape's color by the
+   * Given the desired final r, g, and b color values of the shape and the number of ticks in which
+   * that final color is to be achieved. Utilizes rate of change to alter the shape's color by the
    * amount it should over a single tick. This method should be called by the given number of ticks
    * to achieve the desired final color.
    *

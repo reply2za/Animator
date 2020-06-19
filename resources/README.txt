@@ -64,4 +64,32 @@ View:
 - Added: ViewImplSVG class to represent an instance of a SVG visual view
 - Added: ViewImplTextual class to represent an instance of a textual visual view
 - Added: ViewImplVisual class to represent an instance of a visual visual view
- 
+
+Assignment 7:
+
+Now that our project has finally come to a close (thank god), it's much easier to look back on what
+we did well and what we could improve on.
+
+UpdateDrawingView - We added this class as the visual view for the animation. The reason why we
+decided against composition for this particular class was because the animation that we output
+in the view has very limited features, as it just plays the animation and that's it. This design
+allowed us to include a variety of new things, such as starting the animation, stopping the
+animation, and acting as a helper to the controller to facilitate the necessary functions that
+define this view vs. the normal view. I'm glad we went this route, as it let us have a lot more
+creative freedom with the way that the image was controlled without being constrained to the
+strict bounds of composition of a separate design that serves a different purpose.
+
+IGraphicsEdit - This is our interface that is the overarching structure for our update drawing
+class. This allows it to be backwards compatible and gives us the opportunity to expand it in the
+future.
+
+ViewImplVisualControllable - The visual controllable is our view for the editor view. This
+has all of the features that are desired for this assignment such as the buttons and used the
+features class so that we can communicate between the controller and view as we learned in class.
+This allows us to keep local things local, but also delegatesome of the overarching commands to
+be controlled by the controller.
+
+
+
+
+

@@ -44,7 +44,7 @@ public class ViewImplVisual extends JFrame implements IView {
 
     // the window toolkit that holds the pane
     c = getContentPane();
-    c.add(panel);
+    c.add(jScrollPane);
   }
 
   /**

@@ -32,8 +32,8 @@ public interface IActionCommand {
   int getTicksLeft();
 
   /**
-   * Gets the field values as an array. Each array index for each field. Fields differ depending
-   * on the implementation. Order of the fields are placed depending on the implementation of the
+   * Gets the field values as an array. Each array index for each field. Fields differ depending on
+   * the implementation. Order of the fields are placed depending on the implementation of the
    * constructor.
    *
    * @return the values of the fields within a string

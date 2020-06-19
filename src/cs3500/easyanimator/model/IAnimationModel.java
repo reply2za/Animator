@@ -66,19 +66,20 @@ public interface IAnimationModel {
    * @param shape the new shape and it's properties.
    * @throws IllegalArgumentException if there already exists a shape with that name.
    */
-  void createShape(String name, IShape shape);
+  void createShape(String name, IShape shape) throws IllegalArgumentException;
 
   /**
    * Creates a new {@link IShape} in the model that can be manipulated via actions. Does not require
    * any instantiation of an {@link IShape} to be passed as an argument.
    *
-   * @param name   the unique name of the shape
-   * @param type   the type of shape based on specific keywords: 'triangle' - creates a new {@link
-   *               cs3500.easyanimator.model.shapes.Triangle} 'ellipse' - creates a new {@link
-   *               cs3500.easyanimator.model.shapes.Oval} 'rectangle' - creates a new {@link
-   *               cs3500.easyanimator.model.shapes.Rectangle}
+   * @param name the unique name of the shape
+   * @param type the type of shape based on specific keywords: 'triangle' - creates a new {@link
+   *             cs3500.easyanimator.model.shapes.Triangle} 'ellipse' - creates a new {@link
+   *             cs3500.easyanimator.model.shapes.Oval} 'rectangle' - creates a new {@link
+   *             cs3500.easyanimator.model.shapes.Rectangle}
+   * @throws IllegalArgumentException if the shape name is taken
    */
-  void createShapeWithoutInstance(String name, String type);
+  void createShapeWithoutInstance(String name, String type) throws IllegalArgumentException;
 
 
   /**

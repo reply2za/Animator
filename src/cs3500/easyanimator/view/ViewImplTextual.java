@@ -29,7 +29,7 @@ public class ViewImplTextual implements IView {
     this.output = output;
     animationList = m.getAnimationList();
     shapeIdentifier = m.getShapeIdentifier();
-}
+  }
 
   /**
    * Method to return the appendable so that it can be outputted to the proper channels.

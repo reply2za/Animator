@@ -164,7 +164,7 @@ public class AnimationModelImpl implements IAnimationModel {
     ChangePosition cp2 = new ChangePosition(0, 0, 1);
     ChangeDimension cd1 = new ChangeDimension(0, 0, 1);
     ChangeDimension cd2 = new ChangeDimension(0, 0, 1);
-    String commandName = "null";
+    String commandName;
     for (int i = 0; i < 2; i++) {
       // get all of the commands from the list
       commandName = "null";
@@ -180,6 +180,8 @@ public class AnimationModelImpl implements IAnimationModel {
           break;
         case ("color"):
           cc1 = (ChangeColor) startingCommandList.get(i);
+          break;
+        default:
           break;
       }
     }
@@ -200,6 +202,8 @@ public class AnimationModelImpl implements IAnimationModel {
 
         case ("color"):
           cc2 = (ChangeColor) endingCommandList.get(i);
+          break;
+        default:
           break;
       }
     }
@@ -290,7 +294,6 @@ public class AnimationModelImpl implements IAnimationModel {
 
   @Override
   public void createShapeWithoutInstance(String name, String type) {
-
     IShape shape;
     Posn p = null;
     Dimension d = null;

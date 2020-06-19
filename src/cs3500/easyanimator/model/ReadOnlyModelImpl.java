@@ -17,6 +17,11 @@ public class ReadOnlyModelImpl implements IReadOnlyModel {
   IAnimationModel m;
 
 
+  /**
+   * The constrcutor for a read only model. Takes in a normal model to convert it for the view.
+   *
+   * @param m the model that will be viewed.
+   */
   public ReadOnlyModelImpl(IAnimationModel m) {
     if (m instanceof ReadOnlyModelImpl) {
       throw new IllegalArgumentException("Cannot pass a read-only implementation to this class.");
@@ -37,14 +42,13 @@ public class ReadOnlyModelImpl implements IReadOnlyModel {
 
 
   @Override
-  public void remove(String key, int startTick, int endTick) throws UnsupportedOperationException {
+  public void removeActionCommand(String key, int startTick, int endTick, IActionCommand ac)
+      throws UnsupportedOperationException {
     throw new UnsupportedOperationException("Operation not supported in this readonly.");
   }
 
-
   @Override
-  public void removeActionCommand(String key, int startTick, int endTick, IActionCommand ac)
-      throws UnsupportedOperationException {
+  public void remove(String key, int startTick, int endTick) throws UnsupportedOperationException {
     throw new UnsupportedOperationException("Operation not supported in this readonly.");
   }
 

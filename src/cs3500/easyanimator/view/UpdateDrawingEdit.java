@@ -1,5 +1,6 @@
 package cs3500.easyanimator.view;
 
+import cs3500.easyanimator.model.IReadOnlyModel;
 import cs3500.easyanimator.model.actions.ChangeColor;
 import cs3500.easyanimator.model.actions.ChangeDimension;
 import cs3500.easyanimator.model.actions.ChangePosition;
@@ -24,19 +25,20 @@ import javax.swing.Timer;
  * This is the class that is in responsible for drawing and updating our visual view. It uses a
  * timer to set the speed and make repetitive changes.
  */
-public class UpdateDrawingEdit extends JPanel implements ActionListener {
+public class UpdateDrawingEdit extends JPanel implements ActionListener, IGraphicsEdit {
 
   LinkedHashMap<String, IShape> shapeIdentifier;
   LinkedHashMap<String, ArrayList<ISynchronisedActionSet>> animationList;
   LinkedHashMap<String, IShape> copyShapeIdentifier;
   LinkedHashMap<String, ArrayList<ISynchronisedActionSet>> copyAnimationList;
   int secondsPerTick;
-  int ticks;
-  boolean playing = false;
-  boolean looping = false;
+  private int ticks;
+  private boolean playing = false;
+  private boolean looping = false;
   ArrayList<ISynchronisedActionSet> listOfActions;
-  int biggestTick;
-  Timer timer;
+  private int biggestTick;
+  private int timeDelay;
+  private int initialDelay;
 
   /**
    * This is the constructor for the class that handles updating the view as the time passes.
@@ -68,6 +70,8 @@ public class UpdateDrawingEdit extends JPanel implements ActionListener {
         }
       }
     }
+    timeDelay = 1000 / secondsPerTick;
+    initialDelay = 10 / secondsPerTick;
   }
 
 
@@ -83,30 +87,32 @@ public class UpdateDrawingEdit extends JPanel implements ActionListener {
     for (String key : copyShapeIdentifier.keySet()) {
       IShape currentShape = copyShapeIdentifier.get(key);
       // Get all of the fields to easily call later
-      Posn currentPosn = currentShape.getPosn();
-      Dimension currentDimension = currentShape.getDimension();
-      Color currentColor = currentShape.getColor();
-      java.awt.Color awtColor = new java.awt.Color(currentColor.getR(), currentColor.getG(),
-          currentColor.getB());
-      switch (currentShape.officialShapeName()) {
-        case ("rectangle"):
-          g.fillRect(currentPosn.getX(), currentPosn.getY(),
-              currentDimension.getW(), currentDimension.getH());
-          g.setColor(awtColor);
-          break;
-        case ("oval"):
-          g.fillOval(currentPosn.getX(), currentPosn.getY(),
-              currentDimension.getW(), currentDimension.getH());
-          g.setColor(awtColor);
-          break;
-        default:
-          throw new IllegalArgumentException("Not a valid shape.");
+      if (currentShape.getPosn() != null) {
+        Posn currentPosn = currentShape.getPosn();
+        Dimension currentDimension = currentShape.getDimension();
+        Color currentColor = currentShape.getColor();
+        java.awt.Color awtColor = new java.awt.Color(currentColor.getR(), currentColor.getG(),
+            currentColor.getB());
+        switch (currentShape.officialShapeName()) {
+          case ("rectangle"):
+            g.setColor(awtColor);
+            g.fillRect(currentPosn.getX(), currentPosn.getY(),
+                currentDimension.getW(), currentDimension.getH());
+            break;
+          case ("oval"):
+            g.setColor(awtColor);
+            g.fillOval(currentPosn.getX(), currentPosn.getY(),
+                currentDimension.getW(), currentDimension.getH());
+            break;
+          default:
+            throw new IllegalArgumentException("Not a valid shape.");
+        }
       }
     }
-    this.timer = new Timer(1000 / secondsPerTick, this);
-    this.timer.setInitialDelay(0);
+    Timer timer = new Timer(timeDelay, this);
+    timer.setInitialDelay(initialDelay);
     ticks++;
-    this.timer.start();
+    timer.start();
   }
 
   // All animation lists
@@ -120,6 +126,7 @@ public class UpdateDrawingEdit extends JPanel implements ActionListener {
    */
   @Override
   public void actionPerformed(ActionEvent e) {
+
     if (playing) {
       for (String name : copyAnimationList.keySet()) {
         listOfActions = copyAnimationList.get(name);
@@ -137,41 +144,98 @@ public class UpdateDrawingEdit extends JPanel implements ActionListener {
       }
       repaint();
     }
-    if (biggestTick <= ticks && looping) {
+    if (looping && ticks >= biggestTick) {
       resetFields();
+      this.playing = true;
     }
   }
 
+  /**
+   * Changes the speed of the animation based on the input from the slider.
+   *
+   * @param secondsPerTick the speed of the animation based on the milliseconds of the Timer.
+   */
+  public void changeSpeed(int secondsPerTick) {
+    timeDelay = 1000 / secondsPerTick;
+    initialDelay = 10 / secondsPerTick;
+  }
+
+  /**
+   * Starts playing the animation by setting the play boolean to true.
+   */
   public void startPlaying() {
     this.playing = true;
   }
 
+  /**
+   * Pauses the animation by changing the play boolean to false.
+   */
   public void pause() {
     this.playing = false;
   }
 
+  /**
+   * Sets the curernt amount of ticks passed in the animation.
+   *
+   * @param ticks the current amount of ticks we want to set the animation to.
+   */
   public void setTicks(int ticks) {
     this.ticks = ticks;
   }
 
+  /**
+   * Resets the fields of the animation to its original state for playback. Useful for restarting.
+   */
   public void resetFields() {
     this.playing = false;
-    this.copyAnimationList.clear();
-    this.copyShapeIdentifier.clear();
-    this.copyAnimationList.putAll(copyAnimationList());
-    this.copyShapeIdentifier.putAll(copyShapeList());
     this.ticks = 0;
-    this.playing = true;
+    this.copyAnimationList = copyAnimationList();
+    this.copyShapeIdentifier = copyShapeList();
+    this.ticks = 0;
   }
 
+  /**
+   * Getter method that rerturns the amount of ticks passed in the animation.
+   *
+   * @return the amount of ticks passed in the animation.
+   */
   public int getTicks() {
     return this.ticks;
   }
 
+  /**
+   * Getter method to extract the current loop state of an animation.
+   *
+   * @return the boolean of whether or not it is looping.
+   */
+  public boolean isLooping() {
+    return this.looping;
+  }
+
+  /**
+   * Set the looping state of an animation to whatever boolean is given.
+   *
+   * @param l the looping state to be set to.
+   */
   public void setLooping(boolean l) {
     this.looping = l;
   }
 
+  /**
+   * Updates the read only copy of the animation and assigns the copy's to be displayed.
+   *
+   * @param m the read only model that is read by the view.
+   */
+  public void updateReadOnly(IReadOnlyModel m) {
+    this.playing = false;
+    this.shapeIdentifier = m.getShapeIdentifier();
+    this.animationList = m.getAnimationList();
+    this.copyShapeIdentifier = copyShapeList();
+    this.copyAnimationList = copyAnimationList();
+    resetFields();
+  }
+
+  // copys the animation list from the read copy to be displayed
   private LinkedHashMap<String, ArrayList<ISynchronisedActionSet>> copyAnimationList() {
     LinkedHashMap<String, ArrayList<ISynchronisedActionSet>> newList = new LinkedHashMap<>();
     LinkedHashMap<String, ArrayList<ISynchronisedActionSet>> oldList = animationList;
@@ -194,6 +258,8 @@ public class UpdateDrawingEdit extends JPanel implements ActionListener {
             case ("dimension"):
               newCommandList.add(new ChangeDimension(fields[0], fields[1], ac.getTicksLeft()));
               break;
+            default:
+              throw new IllegalArgumentException("Cannot determine command.");
           }
         }
         isalNew.add(new SynchronizedActionSetImpl(isa.getStartTick(), isa.getEndTick(),
@@ -205,16 +271,32 @@ public class UpdateDrawingEdit extends JPanel implements ActionListener {
     return newList;
   }
 
+  // copys the list of shapes from the read copy to be displayed by the view
   private LinkedHashMap<String, IShape> copyShapeList() {
     LinkedHashMap<String, IShape> newList = new LinkedHashMap<>();
     LinkedHashMap<String, IShape> oldList = shapeIdentifier;
     for (String key : oldList.keySet()) {
       IShape oldShape = oldList.get(key);
-      Color newColor = new Color(oldShape.getColor().getR(), oldShape.getColor().getG(),
-          oldShape.getColor().getB());
-      Posn newPosn = new Posn(oldShape.getPosn().getX(), oldShape.getPosn().getY());
-      Dimension newDimension = new Dimension(oldShape.getDimension().getW(),
-          oldShape.getDimension().getH());
+      Color newColor;
+      Posn newPosn;
+      Dimension newDimension;
+      if (oldShape.getColor() == null) {
+        newColor = null;
+      } else {
+        newColor = new Color(oldShape.getColor().getR(), oldShape.getColor().getG(),
+            oldShape.getColor().getB());
+      }
+      if (oldShape.getPosn() == null) {
+        newPosn = null;
+      } else {
+        newPosn = new Posn(oldShape.getPosn().getX(), oldShape.getPosn().getY());
+      }
+      if (oldShape.getDimension() == null) {
+        newDimension = null;
+      } else {
+        newDimension = new Dimension(oldShape.getDimension().getW(),
+            oldShape.getDimension().getH());
+      }
       if (oldList.get(key).officialShapeName().equalsIgnoreCase("oval")) {
         newList.put(key, new Oval(newPosn, newDimension, newColor));
       } else if (oldList.get(key).officialShapeName().equalsIgnoreCase("rectangle")) {
