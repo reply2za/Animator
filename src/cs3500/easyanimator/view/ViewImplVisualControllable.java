@@ -84,8 +84,8 @@ public class ViewImplVisualControllable extends JFrame implements IView {
    */
   private void initializePane() {
     setLocation(readOnlyModel.getCanvasX(), readOnlyModel.getCanvasY());
-    setSize(readOnlyModel.getCanvasWidth() + 190,
-        readOnlyModel.getCanvasHeight() + 80);
+    setSize(readOnlyModel.getCanvasWidth() + 210,
+        readOnlyModel.getCanvasHeight() + 75);
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
     this.graphics = new UpdateDrawingEdit(readOnlyModel.getAnimationList(),
