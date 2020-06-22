@@ -66,14 +66,14 @@ public class UpdateDrawing extends JPanel implements ActionListener {
 
       switch (currentShape.officialShapeName()) {
         case ("rectangle"):
+          g2d.setColor(awtColor);
           g2d.fillRect(currentPosn.getX(), currentPosn.getY(),
               currentDimension.getW(), currentDimension.getH());
-          g2d.setColor(awtColor);
           break;
         case ("oval"):
+          g2d.setColor(awtColor);
           g2d.fillOval(currentPosn.getX(), currentPosn.getY(),
               currentDimension.getW(), currentDimension.getH());
-          g2d.setColor(awtColor);
           break;
         default:
           throw new IllegalArgumentException("Not a valid shape.");

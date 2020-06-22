@@ -157,7 +157,8 @@ public class ViewImplVisualControllable extends JFrame implements IView {
     this.shapeNameTextLabel = new JLabel("Enter a shape name:");
     this.ticksTextLabel = new JLabel("Enter the ticks (start,end)");
     this.requiredFieldsTextLabel = new JLabel("<HTML><b>Required fields:</b><br>"
-        + "<i>press 'enter' to register the<br>number in the text box</i><br>"
+        + "<i>press 'enter' to register the<br>number in the text box &<br>"
+        + "values with multiple numbers<br> should be separated by a space</i><br>"
         + "__________________________<br> <br></HTML>");
 
     //commit button
@@ -294,7 +295,11 @@ public class ViewImplVisualControllable extends JFrame implements IView {
     this.ticksText = text;
   }
 
-  // gives the options for the user to choose from.
+  /**
+   * Gives the options for the user to choose from.
+   *
+   * @param selectedIndex the index of the box that the user selected
+   */
   private void comboBox(int selectedIndex) {
     StringBuilder sb = new StringBuilder();
     colorTextField.setVisible(false);
@@ -331,6 +336,8 @@ public class ViewImplVisualControllable extends JFrame implements IView {
         positionTextField.setVisible(true);
         dimensionTextLabel.setVisible(true);
         dimensionTextField.setVisible(true);
+        ticksTextLabel.setVisible(true);
+        ticksTextField.setVisible(true);
         break;
       case (4):
         shapeNameTextLabel.setVisible(true);
@@ -355,7 +362,10 @@ public class ViewImplVisualControllable extends JFrame implements IView {
     this.infoTextLabel.setText(sb.toString());
   }
 
-  // changes the speed of the animation.
+  /**
+   * Changes the speed of the animation.
+   * @param e a given ChangeEvent.
+   */
   private void speedSlider(ChangeEvent e) {
     JSlider source = (JSlider) e.getSource();
     graphics.pause();
@@ -365,7 +375,11 @@ public class ViewImplVisualControllable extends JFrame implements IView {
     }
   }
 
-  // commits the changes that are made in the editable view.
+  /**
+   * Commits the changes that are made in the editable view.
+   *
+   * @param features the features of the controller that are call-able
+   */
   private void commitButton(IControllerFeatures features) {
     cs3500.easyanimator.model.shapes.Color tempC;
     cs3500.easyanimator.model.shapes.Dimension tempD;
@@ -376,17 +390,22 @@ public class ViewImplVisualControllable extends JFrame implements IView {
     String[] p = positionText.split(" ");
     String[] d = dimensionText.split(" ");
     String[] t = ticksText.split(" ");
-    if (c.length >= 5) {
-      tempC = new cs3500.easyanimator.model.shapes.Color(Integer.parseInt(c[0]),
-          Integer.parseInt(c[1]), Integer.parseInt(c[2]));
-    }
-    if (p.length >= 3) {
-      tempP = new cs3500.easyanimator.model.shapes.Posn(Integer.parseInt(p[0]),
-          Integer.parseInt(p[1]));
-    }
-    if (d.length >= 3) {
-      tempD = new cs3500.easyanimator.model.shapes.Dimension(Integer.parseInt(d[0]),
-          Integer.parseInt(d[1]));
+    try {
+      if (c.length >= 5) {
+        tempC = new cs3500.easyanimator.model.shapes.Color(Integer.parseInt(c[0]),
+            Integer.parseInt(c[1]), Integer.parseInt(c[2]));
+      }
+      if (p.length >= 3) {
+        tempP = new cs3500.easyanimator.model.shapes.Posn(Integer.parseInt(p[0]),
+            Integer.parseInt(p[1]));
+      }
+      if (d.length >= 3) {
+        tempD = new cs3500.easyanimator.model.shapes.Dimension(Integer.parseInt(d[0]),
+            Integer.parseInt(d[1]));
+      }
+    } catch (NumberFormatException nfe) {
+      error("Could not parse numbers!");
+      return;
     }
     if (shapeText.isEmpty()) {
       error("Shape name is empty!");
@@ -421,7 +440,7 @@ public class ViewImplVisualControllable extends JFrame implements IView {
           return;
         }
         break;
-      case (4):
+      case (4): // edit keyframe
         error("depreciated action");
         return;
       case (5):
@@ -461,6 +480,8 @@ public class ViewImplVisualControllable extends JFrame implements IView {
 
   /**
    * Changes a JLabel to inform the user that one of their fields is empty.
+   *
+   * @param message the message of the error you would like to convey
    */
   private void error(String message) {
     this.infoTextLabel.setForeground(Color.red);
@@ -469,9 +490,8 @@ public class ViewImplVisualControllable extends JFrame implements IView {
   }
 
   /**
-   * loops the animation indefinitely
+   * Loops the animation indefinitely.
    */
-
   private void loopingButton() {
     if (graphics.isLooping()) {
       loopingButton.setText("looping: off");
