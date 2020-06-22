@@ -6,6 +6,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -23,39 +25,35 @@ import javax.swing.event.ChangeListener;
  */
 public class ViewImplVisualControllable extends JFrame implements IView {
 
-  IReadOnlyModel readOnlyModel;
-  int ticksPerSecond;
-  JPanel buttonPane;
-  JButton restartButton;
-  JButton pauseButton;
-  JButton resumeButton;
-  JButton loopingButton;
-  JButton exitButton;
-  JPanel editPane;
-  JLabel addShapeLabel;
-  JTextField shapeNameTextField;
-  JTextField colorTextField;
-  JTextField positionTextField;
-  JTextField dimensionTextField;
-  JTextField ticksTextField;
-  JLabel shapeNameTextLabel;
-  JLabel colorTextLabel;
-  JLabel positionTextLabel;
-  JLabel dimensionTextLabel;
-  JLabel ticksTextLabel;
-  JLabel infoTextLabel;
-  JLabel requiredFieldsTextLabel;
-  JComboBox<String> shapeComboBox;
-  JButton commitButton;
-  JSlider speed;
-  UpdateDrawingEdit graphics;
-  int selectedShape;
-  int selectedIndex;
-  String shapeText;
-  String ticksText;
-  String colorText;
-  String dimensionText;
-  String positionText;
+  private IReadOnlyModel readOnlyModel;
+  private int ticksPerSecond;
+  private JButton restartButton;
+  private JButton pauseButton;
+  private JButton resumeButton;
+  private JButton loopingButton;
+  private JButton exitButton;
+  private JLabel addShapeLabel;
+  private JTextField shapeNameTextField;
+  private JTextField colorTextField;
+  private JTextField positionTextField;
+  private JTextField dimensionTextField;
+  private JTextField ticksTextField;
+  private JLabel shapeNameTextLabel;
+  private JLabel colorTextLabel;
+  private JLabel positionTextLabel;
+  private JLabel dimensionTextLabel;
+  private JLabel ticksTextLabel;
+  private JLabel infoTextLabel;
+  private JLabel requiredFieldsTextLabel;
+  private JComboBox<String> shapeComboBox;
+  private JButton commitButton;
+  private JSlider speed;
+  private UpdateDrawingEdit graphics;
+  private String shapeText;
+  private String ticksText;
+  private String colorText;
+  private String dimensionText;
+  private String positionText;
 
   /**
    * Singular constructor that takes in the speed of the animation to be played.
@@ -68,7 +66,6 @@ public class ViewImplVisualControllable extends JFrame implements IView {
     super("Easy Animator");
     this.readOnlyModel = readOnlyModel;
     this.ticksPerSecond = ticksPerSecond;
-    this.selectedShape = -1;
     this.shapeText = "";
     this.ticksText = "";
     this.colorText = "";
@@ -92,7 +89,7 @@ public class ViewImplVisualControllable extends JFrame implements IView {
         readOnlyModel.getShapeIdentifier(), ticksPerSecond);
 
     // BUTTON PANE: To add the buttons -----
-    this.buttonPane = new JPanel();
+    JPanel buttonPane = new JPanel();
     buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.LINE_AXIS));
     // delete later if not needed - no noticeable effects
     // buttonPane.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
@@ -122,7 +119,7 @@ public class ViewImplVisualControllable extends JFrame implements IView {
     ActionListener boxChange = e -> {
     };
 
-    this.editPane = new JPanel();
+    JPanel editPane = new JPanel();
     editPane.setLayout(new BoxLayout(editPane, BoxLayout.Y_AXIS));
     editPane.setMaximumSize(editPane.getPreferredSize());
     addShapeLabel = new JLabel("<HTML><h3>Your action:</h3></HTML>");
@@ -133,7 +130,6 @@ public class ViewImplVisualControllable extends JFrame implements IView {
         "Remove keyframe", "Remove shape",
     };
     shapeComboBox = new JComboBox<>(shapeStrings);
-    shapeComboBox.setSelectedIndex(0);
     shapeComboBox.addActionListener(boxChange);
 
     // add text fields
@@ -157,8 +153,7 @@ public class ViewImplVisualControllable extends JFrame implements IView {
     this.shapeNameTextLabel = new JLabel("Enter a shape name:");
     this.ticksTextLabel = new JLabel("Enter the ticks (start,end)");
     this.requiredFieldsTextLabel = new JLabel("<HTML><b>Required fields:</b><br>"
-        + "<i>press 'enter' to register the<br>number in the text box &<br>"
-        + "values with multiple numbers<br> should be separated by a space</i><br>"
+        + "<i>values with multiple numbers<br> should be separated by a space</i><br>"
         + "__________________________<br> <br></HTML>");
 
     //commit button
@@ -242,12 +237,7 @@ public class ViewImplVisualControllable extends JFrame implements IView {
     loopingButton.addActionListener(evt -> this.loopingButton());
     speed.addChangeListener(this::speedSlider);
     commitButton.addActionListener(evt -> this.commitButton(features));
-    shapeComboBox.addActionListener(evt -> this.comboBox(shapeComboBox.getSelectedIndex()));
-    ticksTextField.addActionListener(evt -> this.setTicksText(ticksTextField.getText()));
-    shapeNameTextField.addActionListener(evt -> this.setShapeName(shapeNameTextField.getText()));
-    positionTextField.addActionListener(evt -> this.setPosition(positionTextField.getText()));
-    dimensionTextField.addActionListener(evt -> this.setDimension(dimensionTextField.getText()));
-    colorTextField.addActionListener(evt -> this.setColor(colorTextField.getText()));
+    shapeComboBox.addActionListener(evt -> this.comboBoxAction(shapeComboBox.getSelectedIndex()));
   }
 
   /**
@@ -300,8 +290,13 @@ public class ViewImplVisualControllable extends JFrame implements IView {
    *
    * @param selectedIndex the index of the box that the user selected
    */
-  private void comboBox(int selectedIndex) {
+  private void comboBoxAction(int selectedIndex) {
     StringBuilder sb = new StringBuilder();
+    this.shapeNameTextField.setText("");
+    this.dimensionTextField.setText("");
+    this.positionTextField.setText("");
+    this.colorTextField.setText("");
+    this.ticksTextField.setText("");
     colorTextField.setVisible(false);
     positionTextField.setVisible(false);
     dimensionTextField.setVisible(false);
@@ -313,7 +308,6 @@ public class ViewImplVisualControllable extends JFrame implements IView {
     ticksTextLabel.setVisible(false);
     shapeNameTextLabel.setVisible(false);
     shapeNameTextField.setVisible(false);
-    this.selectedIndex = selectedIndex;
     switch (selectedIndex) {
       case (1):
         sb.append("Selected: Add rectangle");
@@ -381,6 +375,11 @@ public class ViewImplVisualControllable extends JFrame implements IView {
    * @param features the features of the controller that are call-able
    */
   private void commitButton(IControllerFeatures features) {
+    this.setTicksText(ticksTextField.getText());
+    this.setShapeName(shapeNameTextField.getText());
+    this.setPosition(positionTextField.getText());
+    this.setDimension(dimensionTextField.getText());
+    this.setColor(colorTextField.getText());
     cs3500.easyanimator.model.shapes.Color tempC;
     cs3500.easyanimator.model.shapes.Dimension tempD;
     cs3500.easyanimator.model.shapes.Posn tempP;
@@ -411,7 +410,7 @@ public class ViewImplVisualControllable extends JFrame implements IView {
       error("Shape name is empty!");
       return;
     }
-    switch (selectedIndex) {
+    switch (this.shapeComboBox.getSelectedIndex()) {
       case (1):
         try {
           features.createShapeWithoutInstance(shapeText, "rectangle");
@@ -474,7 +473,6 @@ public class ViewImplVisualControllable extends JFrame implements IView {
     this.infoTextLabel.setText("Committed!");
     this.readOnlyModel = features.updateReadOnly();
     this.infoTextLabel.setForeground(Color.green);
-    this.selectedShape = 0;
     graphics.updateReadOnly(features.updateReadOnly());
   }
 
@@ -485,7 +483,6 @@ public class ViewImplVisualControllable extends JFrame implements IView {
    */
   private void error(String message) {
     this.infoTextLabel.setForeground(Color.red);
-    this.selectedShape = 0;
     this.infoTextLabel.setText(message);
   }
 
