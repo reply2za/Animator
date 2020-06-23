@@ -55,7 +55,7 @@ public class ViewImplVisual extends JFrame implements IView {
    *                 IControllerFeatures}
    */
   @Override
-  public void addControllerFeatures(IControllerFeatures features) {
+  public void addFeatureListeners(IControllerFeatures features) {
     //exitButton.addActionListener(evt -> features.exitProgram());
   }
 

@@ -92,6 +92,13 @@ public class UpdateDrawing extends JPanel implements ActionListener {
    */
   @Override
   public void actionPerformed(ActionEvent e) {
+    calculateNext();
+  }
+
+  /**
+   * Calculates the values and fields of the shapes during the next tick to be repainted.
+   */
+  private void calculateNext() {
     for (String name : animationList.keySet()) {
       ArrayList<ISynchronisedActionSet> listOfActions = animationList.get(name);
       IShape currentShape = shapeIdentifier.get(name);
@@ -101,15 +108,12 @@ public class UpdateDrawing extends JPanel implements ActionListener {
           break;
         }
       }
-      // Animations seem to run fine without these two method calls
-      //animationList.put(name, listOfActions);
-      //shapeIdentifier.put(name, currentShape);
     }
     repaint();
   }
 
   /**
-   * Sets the amoount of ticks for a currentanimation.
+   * Sets the amount of ticks for a current animation.
    *
    * @param ticks the amount of ticks to set an animation to.
    */

@@ -148,7 +148,7 @@ public class ViewImplTextual implements IView {
   }
 
   @Override
-  public void addControllerFeatures(IControllerFeatures features) {
+  public void addFeatureListeners(IControllerFeatures features) {
     // intentionally left blank
   }
 }

@@ -13,24 +13,23 @@ public interface IGraphicsEdit {
    *
    * @param secondsPerTick the speed of the animation based on the milliseconds of the Timer.
    */
-  void changeSpeed(int secondsPerTick);
+  void setTickSpeed(int secondsPerTick);
 
   /**
-   * Starts playing the animation by setting the play boolean to true.
+   * Starts playing the animation by setting the play boolean to true if given true. Else pauses the
+   * animation.
+   *
+   * @param play a boolean representing whether the animation is playing or not
    */
-  void startPlaying();
+  void play(boolean play);
 
-  /**
-   * Pauses the animation by changing the play boolean to false.
-   */
-  void pause();
 
   /**
    * Sets the curernt amount of ticks passed in the animation.
    *
-   * @param ticks the current amount of ticks we want to set the animation to.
+   * @param currentTick the current amount of ticks we want to set the animation to.
    */
-  void setTicks(int ticks);
+  void setCurrentTick(int currentTick);
 
   /**
    * Resets the fields of the animation to its original state for playback. Useful for restarting.
@@ -42,7 +41,7 @@ public interface IGraphicsEdit {
    *
    * @return the amount of ticks passed in the animation.
    */
-  int getTicks();
+  int getCurrentTick();
 
   /**
    * Getter method to extract the current loop state of an animation.

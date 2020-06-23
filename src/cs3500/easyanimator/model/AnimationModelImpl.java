@@ -49,6 +49,23 @@ public class AnimationModelImpl implements IAnimationModel {
     animationList = new LinkedHashMap<>();
   }
 
+  /**
+   * An {@link AnimationModelImpl} constructor. Serves as a copy constructor.
+   *
+   * <p>Class Invariant: 'orderByType' and 'shapeIdentifier'
+   * both must have the same keys for a given shape and its operations
+   *
+   * @param m the model that is to be cloned
+   */
+  public AnimationModelImpl(IAnimationModel m) {
+    this.animationList = m.getAnimationList();
+    this.shapeIdentifier = m.getShapeIdentifier();
+    this.canvasWidth = m.getCanvasWidth();
+    this.canvasHeight = m.getCanvasHeight();
+    this.canvasX = m.getCanvasX();
+    this.canvasY = m.getCanvasY();
+  }
+
   @Override
   public void add(String key, int start, int end, IActionCommand ac) {
     if (animationList.get(key) == null) {

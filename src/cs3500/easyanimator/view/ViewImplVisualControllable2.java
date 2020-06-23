@@ -2,12 +2,16 @@ package cs3500.easyanimator.view;
 
 import cs3500.easyanimator.controller.IControllerFeatures;
 import cs3500.easyanimator.model.IReadOnlyModel;
+import cs3500.easyanimator.model.actions.ISynchronisedActionSet;
+import cs3500.easyanimator.model.shapes.IShape;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.util.ArrayList;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -17,19 +21,18 @@ import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 /**
  * A editable view for the animation. Has custom stop, start, restart buttons and gives user the
  * ability to edit keyframes and shapes.
  */
-public class ViewImplVisualControllable extends JFrame implements IView {
+public class ViewImplVisualControllable2 extends JFrame implements IView2 {
 
   private IReadOnlyModel readOnlyModel;
   private int ticksPerSecond;
   private JButton restartButton;
   private JButton pauseButton;
-  private JButton resumeButton;
+  private JButton playButton;
   private JButton loopingButton;
   private JButton exitButton;
   private JLabel addShapeLabel;
@@ -47,13 +50,22 @@ public class ViewImplVisualControllable extends JFrame implements IView {
   private JLabel requiredFieldsTextLabel;
   private JComboBox<String> shapeComboBox;
   private JButton commitButton;
-  private JSlider speed;
-  private UpdateDrawingEdit graphics;
+  private UpdateDrawingEditByFrame graphics;
   private String shapeText;
   private String ticksText;
   private String colorText;
   private String dimensionText;
   private String positionText;
+  private final JLabel speedLabel;
+  private final JTextField speedTextField;
+  private JSlider animationSlider;
+  private JPanel buttonPane;
+  private int currentTick;
+  private int timeDelay;
+  private int initialDelay;
+  private int secondsPerTick;
+  private int biggestTick;
+  private boolean isPlaying;
 
   /**
    * Singular constructor that takes in the speed of the animation to be played.
@@ -61,7 +73,7 @@ public class ViewImplVisualControllable extends JFrame implements IView {
    * @param ticksPerSecond the speed of the animation.
    * @param readOnlyModel  the given read-only model
    */
-  public ViewImplVisualControllable(int ticksPerSecond, IReadOnlyModel readOnlyModel) {
+  public ViewImplVisualControllable2(int ticksPerSecond, IReadOnlyModel readOnlyModel) {
 
     super("Easy Animator");
     this.readOnlyModel = readOnlyModel;
@@ -71,53 +83,36 @@ public class ViewImplVisualControllable extends JFrame implements IView {
     this.colorText = "";
     this.dimensionText = "";
     this.positionText = "";
+    this.speedLabel = new JLabel("Speed (1-5): 1");
+    this.speedTextField = new JTextField();
 
-    initializePane();
+    this.isPlaying = true;
+    secondsPerTick = 1;
+    timeDelay = 1000 / secondsPerTick;
+    initialDelay = 10 / secondsPerTick;
+    biggestTick = 0;
+    initializeFrame();
   }
 
   /**
    * Initializes the pane that all of the information will be on. Contains all necessary info for
-   * the editable view.
+   * the editable view. Should be the only main-window initialize method to be called in the
+   * constructor. Other initialize methods regarding parts of the main frame should be placed here.
    */
-  private void initializePane() {
+  private void initializeFrame() {
     setLocation(readOnlyModel.getCanvasX(), readOnlyModel.getCanvasY());
     setSize(readOnlyModel.getCanvasWidth() + 210,
         readOnlyModel.getCanvasHeight() + 75);
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-    this.graphics = new UpdateDrawingEdit(readOnlyModel.getAnimationList(),
+    this.graphics = new UpdateDrawingEditByFrame(readOnlyModel.getAnimationList(),
         readOnlyModel.getShapeIdentifier(), ticksPerSecond);
 
-    // BUTTON PANE: To add the buttons -----
-    JPanel buttonPane = new JPanel();
-    buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.LINE_AXIS));
-    // delete later if not needed - no noticeable effects
-    // buttonPane.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
-    //buttonPane.add(Box.createHorizontalGlue()); // right aligns the button
-    exitButton = new JButton("Exit");
-    exitButton.setActionCommand("Exit Button");
-    buttonPane.add(exitButton);
-    restartButton = new JButton("Restart");
-    restartButton.setActionCommand("Restart Button");
-    buttonPane.add(restartButton);
+    graphics.setView(this);
 
-    loopingButton = new JButton("Looping: off");
-    loopingButton.setActionCommand("Looping Button");
-    buttonPane.add(loopingButton);
-
-    pauseButton = new JButton("Pause");
-    pauseButton.setActionCommand("Pause Button");
-    buttonPane.add(pauseButton);
-    resumeButton = new JButton("Play");
-    resumeButton.setActionCommand("Resume Button");
-    buttonPane.add(resumeButton);
-    buttonPane.setBackground(Color.LIGHT_GRAY);
+    initializeButtonPane();
 
     // EDIT PANE: To manipulate the keyframes -----
-
-    //the combo box
-    ActionListener boxChange = e -> {
-    };
 
     JPanel editPane = new JPanel();
     editPane.setLayout(new BoxLayout(editPane, BoxLayout.Y_AXIS));
@@ -130,7 +125,6 @@ public class ViewImplVisualControllable extends JFrame implements IView {
         "Remove keyframe", "Remove shape",
     };
     shapeComboBox = new JComboBox<>(shapeStrings);
-    shapeComboBox.addActionListener(boxChange);
 
     // add text fields
     this.colorTextField = new JTextField();
@@ -197,27 +191,75 @@ public class ViewImplVisualControllable extends JFrame implements IView {
     ticksTextLabel.setVisible(false);
     requiredFieldsTextLabel.setVisible((true));
 
-    //the slider
-    ChangeListener sliderChange = e -> {
-      JSlider source = (JSlider) e.getSource();
-      graphics.play(false);
-      if (!source.getValueIsAdjusting()) {
-        graphics.setTickSpeed(source.getValue());
-        graphics.play(true);
-      }
-    };
 
-    speed = new JSlider(1, 100, ticksPerSecond);
-    buttonPane.add(speed);
-    speed.setMajorTickSpacing(10);
-    speed.setMinorTickSpacing(1);
-    speed.setPaintTicks(true);
-    speed.setPaintLabels(true);
-    speed.addChangeListener(sliderChange);
+
+/*
+    Timer timer = new Timer(timeDelay, this);
+    timer.setInitialDelay(initialDelay);
+    timer.start();
+*/
+
+
 
     this.add(buttonPane, BorderLayout.PAGE_END);
     this.add(graphics, BorderLayout.CENTER);
     this.add(editPane, BorderLayout.EAST);
+
+  }
+
+  private void initializeButtonPane() {
+    // BUTTON PANE: To add the buttons -----
+    buttonPane = new JPanel();
+    buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.LINE_AXIS));
+    // delete later if not needed - no noticeable effects
+    // buttonPane.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
+    //buttonPane.add(Box.createHorizontalGlue()); // right aligns the button
+    exitButton = new JButton("Exit");
+    exitButton.setActionCommand("Exit Button");
+    buttonPane.add(exitButton);
+
+    loopingButton = new JButton("Looping: off");
+    loopingButton.setActionCommand("Looping Button");
+    buttonPane.add(loopingButton);
+
+    restartButton = new JButton("Restart");
+    restartButton.setActionCommand("Restart Button");
+    buttonPane.add(restartButton);
+
+
+    pauseButton = new JButton("Pause");
+    pauseButton.setActionCommand("Pause Button");
+    buttonPane.add(pauseButton);
+    playButton = new JButton("Play");
+    playButton.setActionCommand("Resume Button");
+    buttonPane.add(playButton);
+    buttonPane.setBackground(Color.LIGHT_GRAY);
+
+    buttonPane.add(speedLabel);
+    buttonPane.add(speedTextField);
+    speedTextField.setMaximumSize(new Dimension(5, speedTextField.getPreferredSize().height));
+    speedTextField.setColumns(2);
+
+    animationSlider = new JSlider(0, getBiggestTick(), ticksPerSecond);
+    buttonPane.add(animationSlider);
+    //  animationSlider.setMajorTickSpacing(10);
+    //  animationSlider.setMinorTickSpacing(1);
+    //  animationSlider.setPaintTicks(true);
+    //  animationSlider.setPaintLabels(true);
+  }
+
+  private int getBiggestTick() {
+    biggestTick = 0;
+    for (String key : readOnlyModel.getAnimationList().keySet()) {
+      ArrayList<ISynchronisedActionSet> tempList = readOnlyModel.getAnimationList().get(key);
+      if (tempList.size() > 0) {
+        int nextTick = tempList.get(tempList.size() - 1).getEndTick();
+        if (nextTick > biggestTick) {
+          biggestTick = nextTick;
+        }
+      }
+    }
+    return biggestTick;
   }
 
 
@@ -231,13 +273,52 @@ public class ViewImplVisualControllable extends JFrame implements IView {
   @Override
   public void addFeatureListeners(IControllerFeatures features) {
     exitButton.addActionListener(evt -> features.exitProgram());
-    restartButton.addActionListener(evt -> this.restartButton());
-    resumeButton.addActionListener(evt -> this.resumeButton());
+    restartButton.addActionListener(evt -> this.restartButton(features));
+    playButton.addActionListener(evt -> this.playButton());
     pauseButton.addActionListener(evt -> this.pauseButton());
     loopingButton.addActionListener(evt -> this.loopingButton());
-    speed.addChangeListener(this::speedSlider);
+    animationSlider.addChangeListener(this::animationSliderAction);
     commitButton.addActionListener(evt -> this.commitButton(features));
     shapeComboBox.addActionListener(evt -> this.comboBoxAction(shapeComboBox.getSelectedIndex()));
+    speedTextField.addActionListener(evt -> {
+      if (!speedTextField.getText().isBlank()) {
+        setSpeedAndErase();
+      }
+    });
+    speedTextField.addFocusListener(new FocusListener() {
+      @Override
+      public void focusGained(FocusEvent e) {
+        // intentionally left blank
+      }
+
+      @Override
+      public void focusLost(FocusEvent e) {
+        setSpeedAndErase();
+      }
+    });
+  }
+
+  /**
+   * Sets the speed and erases the text field responsible for setting the speed. Will set the speed
+   * to 1 if given a negative number. Max speed is 99.
+   */
+  private void setSpeedAndErase() {
+    if (!speedTextField.getText().isBlank()) {
+      int s;
+      try {
+        s = Integer.parseInt(speedTextField.getText());
+        if (s < 1) {
+          s = 1;
+        } else if (s > 5) {
+          s = 5;
+        }
+        graphics.setTickSpeed(s);
+      } catch (NumberFormatException nfe) {
+        return;
+      }
+      speedTextField.setText("");
+      speedLabel.setText("Speed (1-5): " + s);
+    }
   }
 
   /**
@@ -358,15 +439,19 @@ public class ViewImplVisualControllable extends JFrame implements IView {
 
   /**
    * Changes the speed of the animation.
+   *
    * @param e a given ChangeEvent.
    */
-  private void speedSlider(ChangeEvent e) {
-    JSlider source = (JSlider) e.getSource();
+  private void animationSliderAction(ChangeEvent e) {
     graphics.play(false);
-    if (!source.getValueIsAdjusting()) {
-      graphics.setTickSpeed(source.getValue());
-      graphics.play(true);
-    }
+    JSlider source = (JSlider) e.getSource();
+    graphics.setCurrentTick(source.getValue());
+    playButton.setForeground(Color.blue);
+    pauseButton.setForeground(Color.black);
+      if (!source.getValueIsAdjusting()) {
+            graphics.play(true);
+          }
+
   }
 
   /**
@@ -493,30 +578,45 @@ public class ViewImplVisualControllable extends JFrame implements IView {
     if (graphics.isLooping()) {
       loopingButton.setText("looping: off");
       graphics.setLooping(false);
+      loopingButton.setForeground(Color.black);
     } else {
       loopingButton.setText("looping: on");
       graphics.setLooping(true);
+      loopingButton.setForeground(Color.blue);
+
     }
   }
 
   /**
    * Resets the fields to repaint.
    */
-  private void restartButton() {
+  private void restartButton(IControllerFeatures f) {
+    this.playButton.setForeground(Color.blue);
+    this.pauseButton.setForeground(Color.black);
+    this.isPlaying = false;
+    graphics.play(false);
+    f.updateReadOnly();
     graphics.resetFields();
   }
 
   /**
    * Resumes the animation if it was paused. If it was not paused then does not change anything.
    */
-  private void resumeButton() {
+  private void playButton() {
+    this.playButton.setForeground(Color.blue);
+    this.pauseButton.setForeground(Color.black);
+    this.isPlaying = true;
     graphics.play(true);
+
   }
 
   /**
    * Pauses the animation.
    */
   private void pauseButton() {
+    this.playButton.setForeground(Color.black);
+    this.pauseButton.setForeground(Color.blue);
+    this.isPlaying = false;
     graphics.play(false);
   }
 
@@ -527,6 +627,24 @@ public class ViewImplVisualControllable extends JFrame implements IView {
   @Override
   public void showView() {
     setVisible(true);
+  }
+
+  @Override
+  public void updateTicks(int ticks) {
+    this.currentTick = ticks;
+    animationSlider.setValue(ticks);
+  }
+
+  @Override
+  public void triggerPlayButtonBlue() {
+    this.playButton.setForeground(Color.blue);
+    this.pauseButton.setForeground(Color.black);
+  }
+
+  @Override
+  public void triggerPauseButtonBlue() {
+    this.playButton.setForeground(Color.black);
+    this.pauseButton.setForeground(Color.blue);
   }
 
 }

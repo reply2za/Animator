@@ -41,15 +41,15 @@ abstract class AShape implements IShape {
 
   @Override
   public void changeDimensionByTick(int w, int h, int ticks) {
-    this.d = new Dimension(d.getW() + (w - d.getW()) / ticks,
-        d.getH() + (h - d.getH()) / ticks);
+    this.d = new Dimension(d.getW() + ((w - d.getW()) / ticks),
+        d.getH() + ((h - d.getH()) / ticks));
   }
 
   @Override
   public void changeColorByTick(int r, int g, int b, int ticks) {
-    this.c = new Color(c.getR() + (r - c.getR()) / ticks,
-        c.getG() + (g - c.getG()) / ticks,
-        c.getB() + (b - c.getB()) / ticks);
+    this.c = new Color(c.getR() + ((r - c.getR()) / ticks),
+        c.getG() + ((g - c.getG()) / ticks),
+        c.getB() + ((b - c.getB()) / ticks));
   }
 
   @Override

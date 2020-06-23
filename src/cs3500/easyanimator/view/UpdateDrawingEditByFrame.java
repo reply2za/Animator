@@ -17,6 +17,8 @@ import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import javax.swing.JPanel;
 import javax.swing.Timer;
@@ -25,19 +27,21 @@ import javax.swing.Timer;
  * This is the class that is in responsible for drawing and updating our visual view. It uses a
  * timer to set the speed and make repetitive changes.
  */
-public class UpdateDrawingEdit extends JPanel implements ActionListener, IGraphicsEdit2 {
+public class UpdateDrawingEditByFrame extends JPanel implements ActionListener, IGraphicsEdit2 {
 
   private LinkedHashMap<String, IShape> shapeIdentifier;
   private LinkedHashMap<String, ArrayList<ISynchronisedActionSet>> animationList;
   private LinkedHashMap<String, IShape> copyShapeIdentifier;
   private LinkedHashMap<String, ArrayList<ISynchronisedActionSet>> copyAnimationList;
   private int currentTick;
-  private boolean isPlaying = false;
-  private boolean looping = false;
+  private boolean isPlaying;
+  private boolean looping;
   private int biggestTick;
   private int timeDelay;
   private int initialDelay;
   Timer timer;
+  IView2 view;
+  HashMap<Integer, Collection<IShape>> mapOfShapes;
 
   /**
    * This is the constructor for the class that handles updating the view as the time passes.
@@ -47,7 +51,7 @@ public class UpdateDrawingEdit extends JPanel implements ActionListener, IGraphi
    * @param secondsPerTick  The speed in which the animation runs.
    * @throws IllegalArgumentException if the given speed (secondsPerTick) is non-positive.
    */
-  UpdateDrawingEdit(LinkedHashMap<String, ArrayList<ISynchronisedActionSet>> animationList,
+  UpdateDrawingEditByFrame(LinkedHashMap<String, ArrayList<ISynchronisedActionSet>> animationList,
       LinkedHashMap<String, IShape> shapeIdentifier, int secondsPerTick) {
     if (secondsPerTick <= 0) {
       throw new IllegalArgumentException("Speed must be a positive integer.");
@@ -57,6 +61,9 @@ public class UpdateDrawingEdit extends JPanel implements ActionListener, IGraphi
     this.copyShapeIdentifier = copyShapeList();
     this.copyAnimationList = copyAnimationList();
     this.currentTick = 0;
+    mapOfShapes = new HashMap<>();
+    this.looping = false;
+    this.isPlaying = false;
 
     this.biggestTick = 0;
     for (String key : copyAnimationList.keySet()) {
@@ -68,10 +75,12 @@ public class UpdateDrawingEdit extends JPanel implements ActionListener, IGraphi
         }
       }
     }
+    applyAll();
+
     timeDelay = 1000 / secondsPerTick;
     initialDelay = 10 / secondsPerTick;
 
-    timer = new Timer(0, this);
+    timer = new Timer(1000, this);
     timer.setDelay(timeDelay);
     timer.setInitialDelay(10);
     timer.restart();
@@ -85,10 +94,18 @@ public class UpdateDrawingEdit extends JPanel implements ActionListener, IGraphi
    */
   @Override
   public void paint(Graphics g) {
-    super.paintComponents(g);
     // paint all shapes
-    for (String key : copyShapeIdentifier.keySet()) {
-      IShape currentShape = copyShapeIdentifier.get(key);
+    super.paintComponents(g);
+    if (currentTick > biggestTick) {
+      if (looping) {
+        currentTick = 0;
+        return;
+      } else {
+        isPlaying = false;
+        return;
+      }
+    }
+    for (IShape currentShape : mapOfShapes.get(currentTick)) {
       // Get all of the fields to easily call later
       if (currentShape.getPosn() != null) {
         Posn currentPosn = currentShape.getPosn();
@@ -115,9 +132,6 @@ public class UpdateDrawingEdit extends JPanel implements ActionListener, IGraphi
     timer.restart();
   }
 
-  // All animation lists
-  // each animation time 1 to time 2 in each animation list
-
   /**
    * The action listener for the class. This is called every time the timer moves one tick
    * duration.
@@ -126,46 +140,26 @@ public class UpdateDrawingEdit extends JPanel implements ActionListener, IGraphi
    */
   @Override
   public void actionPerformed(ActionEvent e) {
-
-    timer.stop();
+    //timer.stop();
     if (isPlaying) {
       currentTick++;
-      calculateNextState();
       repaint();
+      passTicksToView();
     }
-    timer.start();
+    //timer.start();
   }
 
-  /**
-   * Determines the next tick state of the shapes by applying the animations and then calling the
-   * 'repaint' method.
-   */
-  private void calculateNextState() {
-    for (String name : copyAnimationList.keySet()) {
-      ArrayList<ISynchronisedActionSet> listOfActions = copyAnimationList.get(name);
-      IShape currentShape = copyShapeIdentifier.get(name);
-      for (ISynchronisedActionSet ai : listOfActions) {
-        if (currentTick <= ai.getEndTick() && currentTick >= ai.getStartTick()) {
-          ai.applyAnimation(currentShape);
-          break;
-        }
-      }
-    }
-    if (!looping && currentTick >= biggestTick) {
-      isPlaying = false;
-      timer.stop();
-    } else if (looping && currentTick >= biggestTick) {
-      resetFields();
-      isPlaying = true;
-      timer.start();
-    }
-  }
 
   @Override
   public void setTickSpeed(int secondsPerTick) {
-    timer.setDelay(timeDelay);
-    timeDelay = 1000 / secondsPerTick;
+    if (secondsPerTick != 1) {
+      secondsPerTick = 94 + secondsPerTick;
+    }
+    timeDelay = 1000 - (10 * secondsPerTick);
     initialDelay = 10 / secondsPerTick;
+    timer.setDelay(timeDelay);
+    timer.setInitialDelay(initialDelay);
+    timer.setCoalesce(false);
   }
 
   @Override
@@ -182,6 +176,7 @@ public class UpdateDrawingEdit extends JPanel implements ActionListener, IGraphi
   @Override
   public void setCurrentTick(int currentTick) {
     this.currentTick = currentTick;
+    repaint();
   }
 
   @Override
@@ -190,7 +185,10 @@ public class UpdateDrawingEdit extends JPanel implements ActionListener, IGraphi
     isPlaying = false;
     this.copyAnimationList = copyAnimationList();
     this.copyShapeIdentifier = copyShapeList();
+    view.updateTicks(0);
+    isPlaying = false;
     this.currentTick = 0;
+    view.triggerPauseButtonBlue();
   }
 
   @Override
@@ -206,8 +204,10 @@ public class UpdateDrawingEdit extends JPanel implements ActionListener, IGraphi
   @Override
   public void setLooping(boolean l) {
     this.looping = l;
+    if (looping && currentTick > biggestTick) {
+      isPlaying = true;
+    }
   }
-
 
   @Override
   public void updateReadOnly(IReadOnlyModel m) {
@@ -217,6 +217,17 @@ public class UpdateDrawingEdit extends JPanel implements ActionListener, IGraphi
     this.copyShapeIdentifier = this.copyShapeList();
     this.copyAnimationList = this.copyAnimationList();
   }
+
+  /**
+   * Gives the graphics implementation a reference to the view. This allows it to call methods to
+   * provide information and updates to the view. Should be called by the view.
+   *
+   * @param v the given view that the graphics will be using of type {@link IView2}
+   */
+  public void setView(IView2 v) {
+    this.view = v;
+  }
+
 
   // copys the animation list from the read copy to be displayed
   private LinkedHashMap<String, ArrayList<ISynchronisedActionSet>> copyAnimationList() {
@@ -289,4 +300,67 @@ public class UpdateDrawingEdit extends JPanel implements ActionListener, IGraphi
     }
     return newList;
   }
+
+  // copys the list of shapes from the read copy to be displayed by the view
+  private LinkedHashMap<String, IShape> copyShapeList(LinkedHashMap<String, IShape> orig) {
+    LinkedHashMap<String, IShape> newList = new LinkedHashMap<>();
+    for (String key : orig.keySet()) {
+      IShape oldShape = orig.get(key);
+      Color newColor;
+      Posn newPosn;
+      Dimension newDimension;
+      if (oldShape.getColor() == null) {
+        newColor = null;
+      } else {
+        newColor = new Color(oldShape.getColor().getR(), oldShape.getColor().getG(),
+            oldShape.getColor().getB());
+      }
+      if (oldShape.getPosn() == null) {
+        newPosn = null;
+      } else {
+        newPosn = new Posn(oldShape.getPosn().getX(), oldShape.getPosn().getY());
+      }
+      if (oldShape.getDimension() == null) {
+        newDimension = null;
+      } else {
+        newDimension = new Dimension(oldShape.getDimension().getW(),
+            oldShape.getDimension().getH());
+      }
+      if (orig.get(key).officialShapeName().equalsIgnoreCase("oval")) {
+        newList.put(key, new Oval(newPosn, newDimension, newColor));
+      } else if (orig.get(key).officialShapeName().equalsIgnoreCase("rectangle")) {
+        newList.put(key, new Rectangle(newPosn, newDimension, newColor));
+      }
+    }
+    return newList;
+  }
+
+  /**
+   * This method
+   */
+  private void passTicksToView() {
+    view.updateTicks(currentTick);
+  }
+
+  /**
+   * Calculates all of the animations and places it in a HashMap of integers and list of {@link
+   * IShape}. The key of integers are the ticks with the state of the shapes being the values.
+   */
+  private void applyAll() {
+
+    for (int i = 0; i <= biggestTick; i++) {
+      for (String name : copyAnimationList.keySet()) {
+        ArrayList<ISynchronisedActionSet> listOfActions = copyAnimationList.get(name);
+        IShape currentShape = copyShapeIdentifier.get(name);
+        for (ISynchronisedActionSet ai : listOfActions) {
+          if (i <= ai.getEndTick() && i >= ai.getStartTick()) {
+            ai.applyAnimation(currentShape);
+            break;
+          }
+        }
+      }
+      mapOfShapes.put(i, copyShapeList(copyShapeIdentifier).values());
+    }
+  }
+
 }

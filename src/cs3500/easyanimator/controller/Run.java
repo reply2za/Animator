@@ -1,5 +1,6 @@
 package cs3500.easyanimator.controller;
 
+import cs3500.easyanimator.model.AnimationModelImpl;
 import cs3500.easyanimator.model.AnimationModelImpl.Builder;
 import cs3500.easyanimator.model.IAnimationModel;
 import cs3500.easyanimator.model.IReadOnlyModel;
@@ -10,7 +11,7 @@ import cs3500.easyanimator.view.IView;
 import cs3500.easyanimator.view.ViewImplSVG;
 import cs3500.easyanimator.view.ViewImplTextual;
 import cs3500.easyanimator.view.ViewImplVisual;
-import cs3500.easyanimator.view.ViewImplVisualControllable;
+import cs3500.easyanimator.view.ViewImplVisualControllable2;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -121,7 +122,7 @@ public class Run {
     AnimationBuilder<IAnimationModel> builder = new Builder();
     IAnimationModel model = AnimationReader.parseFile(new FileReader(file), builder);
     // Creates a read-only model for the view to retrieve data
-    IReadOnlyModel readOnlyModel = new ReadOnlyModelImpl(model);
+    IReadOnlyModel readOnlyModel = new ReadOnlyModelImpl(new AnimationModelImpl(model));
 
     // Creates the view
     switch (viewString) {
@@ -135,7 +136,7 @@ public class Run {
         view = new ViewImplVisual(Integer.parseInt(speedString), readOnlyModel);
         break;
       case ("edit"):
-        view = new ViewImplVisualControllable(Integer.parseInt(speedString), readOnlyModel);
+        view = new ViewImplVisualControllable2(Integer.parseInt(speedString), readOnlyModel);
         break;
       default:
         throw new IllegalArgumentException("Invalid view argument");

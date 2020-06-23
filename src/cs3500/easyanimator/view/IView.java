@@ -10,17 +10,19 @@ public interface IView {
 
   /**
    * Passes the features of the controller of type {@link IControllerFeatures} to the view. Allows
-   * the view to retrieve these features from the controller to execute the proper reaction.
+   * the view to retrieve these features from the controller to execute the proper reaction. Should
+   * be called by the controller.
    *
    * @param features the possible actions that the controller supports, of type {@link
    *                 IControllerFeatures}
    */
-  void addControllerFeatures(IControllerFeatures features);
+  void addFeatureListeners(IControllerFeatures features);
 
   /**
    * Creates the view's visuals that is intended to be made as per the implementation and type of
    * view.
    */
   void showView();
+
 }
 

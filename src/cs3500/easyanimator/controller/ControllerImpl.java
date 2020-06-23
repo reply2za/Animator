@@ -1,5 +1,6 @@
 package cs3500.easyanimator.controller;
 
+import cs3500.easyanimator.model.AnimationModelImpl;
 import cs3500.easyanimator.model.IAnimationModel;
 import cs3500.easyanimator.model.IReadOnlyModel;
 import cs3500.easyanimator.model.ReadOnlyModelImpl;
@@ -29,7 +30,8 @@ public class ControllerImpl implements IControllerFeatures {
     this.model = m;
     this.view = v;
     //provide view with all the callbacks
-    v.addControllerFeatures(this);
+    view.addFeatureListeners(this);
+
   }
 
   @Override
@@ -112,7 +114,7 @@ public class ControllerImpl implements IControllerFeatures {
    */
   @Override
   public IReadOnlyModel updateReadOnly() {
-    return new ReadOnlyModelImpl(model);
+    return new ReadOnlyModelImpl(new AnimationModelImpl(model));
   }
 
   @Override
